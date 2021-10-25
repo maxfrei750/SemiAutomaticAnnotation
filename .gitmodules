@@ -1,0 +1,4 @@
+[submodule "models"]
+	shallow = true
+	path = models
+	url = https://github.com/tensorflow/models
