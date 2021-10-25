@@ -1,2 +1,4 @@
 :toc:
-= Python Template
+= SemiAutomaticAnnotation
+
+based on: https://google.github.io/deepmac/

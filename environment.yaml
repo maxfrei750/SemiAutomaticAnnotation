@@ -1,4 +1,4 @@
-name: PythonTemplate
+name: SemiAutomaticAnnotation
 channels:
 - conda-forge
 dependencies:
