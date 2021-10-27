@@ -1,9 +1,11 @@
 version: "3.9"
 services:
-  app:
+  model:
     build:
       context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./input:/home/tensorflow/input:ro
-      - ./output:/home/tensorflow/output
+      dockerfile: serving.Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      MODEL_NAME: deepmac
+    network_mode: host  # TODO: Remove, as soon as containers are linked.
