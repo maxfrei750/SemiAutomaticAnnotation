@@ -1,5 +1,6 @@
 version: "3.9"
 services:
+
   model:
     build:
       context: .
@@ -8,4 +9,14 @@ services:
       - "8501:8501"
     environment:
       MODEL_NAME: deepmac
-    network_mode: host  # TODO: Remove, as soon as containers are linked.
+
+  client:
+    depends_on:
+      - model
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    volumes:
+      - ./input:/home/tensorflow/input:ro
+      - ./output:/home/tensorflow/output
+    command: tail -F anything
