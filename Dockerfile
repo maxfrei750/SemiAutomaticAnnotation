@@ -1,8 +1,12 @@
 # Source: https://github.com/tensorflow/models/issues/9911#issuecomment-922411819
-# TODO: Remove gpu dependency.
 
-FROM tensorflow/tensorflow:2.3.0-gpu
+ARG TENSORFLOW_VERSION="2.6.0"
+
+FROM tensorflow/tensorflow:${TENSORFLOW_VERSION}
 ARG DEBIAN_FRONTEND=noninteractive
+
+# Needs to be repeated, since it is cleared by FROM
+ARG TENSORFLOW_VERSION
 
 # Install apt dependencies
 RUN apt-get update && apt-get install -y \
@@ -23,14 +27,6 @@ WORKDIR /home/tensorflow
 # Clone Object Detection API
 RUN git clone https://github.com/tensorflow/models/ /home/tensorflow/models/
 
-# Workaround: If you use TF 2.2.x, uncomment the line below.
-# WORKDIR /home/tensorflow/models/
-# RUN git checkout 03a6d6c8e79b426231a4d5ba0cf45be9afc8bad5
-
-# Workaround: If you use TF 2.3.x, uncomment the line below.
-WORKDIR /home/tensorflow/models/
-RUN git checkout cf82a72480a41a62b4bbe0f1378d319f0d6f5d5c
-
 # Compile protobuf configs
 RUN (cd /home/tensorflow/models/research/ && protoc object_detection/protos/*.proto --python_out=.)
 WORKDIR /home/tensorflow/models/research/
@@ -38,13 +34,10 @@ WORKDIR /home/tensorflow/models/research/
 RUN cp object_detection/packages/tf2/setup.py ./
 ENV PATH="/home/tensorflow/.local/bin:${PATH}"
 
-# Workaround (For Tensorflow < 2.5.1): Remove tf-models-official dependency from object_detection, will install it manually.
-RUN sed -i -e 's/^.*tf-models-official.*$//g' ./setup.py
-
 RUN python -m pip install -U pip
 
 # Workaround: Lock tensorflow and corresponding tf-models-official versions.
-RUN python -m pip install tensorflow==2.3.0 tensorflow-text==2.3.0 tf-models-official==2.3.0
+RUN python -m pip install tensorflow==${TENSORFLOW_VERSION} tensorflow-text==${TENSORFLOW_VERSION} tf-models-official==${TENSORFLOW_VERSION}
 RUN python -m pip install .
 
 ENV TF_CPP_MIN_LOG_LEVEL 3
