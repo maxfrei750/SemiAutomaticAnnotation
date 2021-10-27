@@ -36,7 +36,8 @@ ENV PATH="/home/tensorflow/.local/bin:${PATH}"
 
 RUN python -m pip install -U pip
 
-# Workaround: Lock tensorflow and corresponding tf-models-official versions.
+# Workaround for `ModuleNotFoundError: No module named 'object_detection'`
+# Lock tensorflow and corresponding tf-models-official versions. Elsewise, object_detection module
 RUN python -m pip install tensorflow==${TENSORFLOW_VERSION} tensorflow-text==${TENSORFLOW_VERSION} tf-models-official==${TENSORFLOW_VERSION}
 RUN python -m pip install .
 
