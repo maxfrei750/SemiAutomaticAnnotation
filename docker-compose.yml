@@ -23,4 +23,4 @@ services:
       - MODEL_API_URL=http://model:${PORT_BACKEND}/v1/models/deepmac:predict
       - PORT_FRONTEND=${PORT_FRONTEND}
     ports:
-      - "${PORT_FRONTEND}:8050"
+      - "${PORT_FRONTEND}:${PORT_FRONTEND}"
