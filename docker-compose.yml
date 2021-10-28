@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: serving.Dockerfile
     ports:
-      - "8501:8501"
+      - "${PORT_BACKEND}"
     environment:
       MODEL_NAME: deepmac
 
@@ -20,4 +20,7 @@ services:
       - ./input:/home/tensorflow/input:ro
       - ./output:/home/tensorflow/output
     environment:
-      - MODEL_API_URL=http://model:8501/v1/models/deepmac:predict
+      - MODEL_API_URL=http://model:${PORT_BACKEND}/v1/models/deepmac:predict
+      - PORT_FRONTEND=${PORT_FRONTEND}
+    ports:
+      - "${PORT_FRONTEND}:8050"
