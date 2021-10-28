@@ -49,7 +49,7 @@ ADD --chown=tensorflow http://download.tensorflow.org/models/object_detection/tf
 RUN tar -xzf deepmac_1024x1024_coco17.tar.gz && rm deepmac_1024x1024_coco17.tar.gz
 
 # Install additional dependencies
-RUN python -m pip install -U scikit-image dash
+RUN python -m pip install -U scikit-image dash dash_bootstrap_components
 
 # Set initial workdir
 WORKDIR /home/tensorflow/
