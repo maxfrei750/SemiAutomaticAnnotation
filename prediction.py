@@ -49,4 +49,4 @@ def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
     masks = ops.reframe_box_masks_to_image_masks(
         tf.convert_to_tensor(masks), tf.convert_to_tensor(boxes), height, width
     )
-    return masks
+    return masks.numpy()

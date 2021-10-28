@@ -73,9 +73,9 @@ def test_api():
         ]
     )
 
-    boxes, masks = predict_masks(image, boxes)
+    masks = predict_masks(image, boxes)
 
-    plot_image_annotations(image, boxes, masks.numpy())
+    plot_image_annotations(image, boxes, masks)
     plt.savefig("output/test.png")
 
 
