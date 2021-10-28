@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import random
 
 import matplotlib.pyplot as plt
@@ -83,10 +84,8 @@ def test_api():
     # boxes = boxes_list[0]
 
     height, width, _ = image.shape
-    # batch = image[tf.newaxis]
-    # boxes = boxes[tf.newaxis]
 
-    inference_url = "http://model:8501/v1/models/deepmac:predict"
+    inference_url = os.environ["MODEL_API_URL"]  # "http://model:8501/v1/models/deepmac:predict"
     data = json.dumps(
         {
             "signature_name": "serving_default",

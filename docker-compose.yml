@@ -19,4 +19,5 @@ services:
     volumes:
       - ./input:/home/tensorflow/input:ro
       - ./output:/home/tensorflow/output
-    command: tail -F anything
+    environment:
+      - MODEL_API_URL=http://model:8501/v1/models/deepmac:predict
