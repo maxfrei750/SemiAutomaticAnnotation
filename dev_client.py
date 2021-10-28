@@ -1,17 +1,13 @@
-import json
 import logging
-import os
 import random
 
 import matplotlib.pyplot as plt
 import numpy as np
-import requests
-import tensorflow as tf
 from matplotlib import patches
-from object_detection.utils import ops
-from PIL import Image, ImageDraw, ImageFont
-from skimage import color, transform, util
+from skimage import color
 from skimage.color import rgb_colors
+
+from prediction import predict_masks, read_image
 
 COLORS = [
     rgb_colors.cyan,
@@ -24,13 +20,6 @@ COLORS = [
 random.shuffle(COLORS)
 
 logging.disable(logging.WARNING)
-
-
-def read_image(path):
-    """Read an image and optionally resize it for better plotting."""
-    with tf.io.gfile.GFile(path, "rb") as f:
-        img = Image.open(f)
-        return np.array(img, dtype=np.uint8)
 
 
 def plot_image_annotations(image, boxes, masks, darken_image=0.5):
@@ -71,40 +60,20 @@ def plot_image_annotations(image, boxes, masks, darken_image=0.5):
 def test_api():
 
     image_path = "/home/tensorflow/input/image3.jpg"
+
     image = read_image(image_path)
 
-    boxes = [
-        [0.000, 0.160, 0.362, 0.812],
-        [0.340, 0.286, 0.472, 0.619],
-        [0.437, 0.008, 0.650, 0.263],
-        [0.382, 0.003, 0.538, 0.594],
-        [0.518, 0.444, 0.625, 0.554],
-    ]
-
-    # boxes = boxes_list[0]
-
-    height, width, _ = image.shape
-
-    inference_url = os.environ["MODEL_API_URL"]  # "http://model:8501/v1/models/deepmac:predict"
-    data = json.dumps(
-        {
-            "signature_name": "serving_default",
-            "instances": [
-                {
-                    "input_tensor": image.tolist(),
-                    "boxes": boxes,
-                }
-            ],
-        }
+    boxes = np.array(
+        [
+            [0.000, 0.160, 0.362, 0.812],
+            [0.340, 0.286, 0.472, 0.619],
+            [0.437, 0.008, 0.650, 0.263],
+            [0.382, 0.003, 0.538, 0.594],
+            [0.518, 0.444, 0.625, 0.554],
+        ]
     )
-    headers = {"content-type": "application/json"}
-    response = requests.post(inference_url, data=data, headers=headers)
 
-    masks = response.json()["predictions"][0]["detection_masks"]
-
-    masks = ops.reframe_box_masks_to_image_masks(
-        tf.convert_to_tensor(masks), tf.convert_to_tensor(boxes), height, width
-    )
+    boxes, masks = predict_masks(image, boxes)
 
     plot_image_annotations(image, boxes, masks.numpy())
     plt.savefig("output/test.png")
