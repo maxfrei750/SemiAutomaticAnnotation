@@ -79,3 +79,5 @@ __pycache__
 # pip files
 build
 *.egg-info
+
+/output
