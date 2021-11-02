@@ -80,7 +80,9 @@ def get_layout():
             style={"height": "98vh"},
         )
     else:
-        layout = error_message.get_layout("No files in folder 'input'.")
+        layout = error_message.get_layout(
+            "No files in folder 'input'.", [dcc.Link("Evaluation", href="/apps/evaluation")]
+        )
 
     return layout
 
