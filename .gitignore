@@ -80,4 +80,7 @@ __pycache__
 build
 *.egg-info
 
+# Custom
+/input
+/annotated
 /output
