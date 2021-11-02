@@ -1,3 +1,7 @@
+import shutil
+from pathlib import Path
+
+import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
 
@@ -5,7 +9,7 @@ from app import app
 from prediction import read_image
 
 from . import error_message
-from .paths import INPUT_ROOT
+from .paths import ANNOTATED_ROOT, INPUT_ROOT
 
 
 def style_cursor(figure):
@@ -35,10 +39,10 @@ def style_annotations(figure):
 
 
 def get_layout():
-    input_image_paths = list(INPUT_ROOT.glob("*.*"))
+    image_paths = list(INPUT_ROOT.glob("*.*"))
 
-    if input_image_paths:
-        image_path = input_image_paths[0]  # only use first image
+    if image_paths:
+        image_path = image_paths[0]  # only use first image
         image = read_image(image_path)
         figure = px.imshow(image)
         style_annotations(figure)
@@ -51,6 +55,7 @@ def get_layout():
         }
         layout = html.Div(
             [
+                # html.H1(dcc.Link("Annotation", href="/apps/annotation", refresh=True)),
                 dcc.Graph(
                     figure=figure,
                     config=graph_config,
@@ -58,9 +63,19 @@ def get_layout():
                     style={"height": "95%"},  # TODO: Make filling flexible
                 ),
                 html.Center(
-                    html.Button("Save & next", id="save-next", n_clicks=0),
+                    html.A(
+                        html.Button(
+                            "Save & next",
+                            id="save-next",
+                            n_clicks=0,
+                            # href="/apps/annotation",
+                            # refresh=True,
+                        ),
+                        href="/apps/annotation",
+                    ),
                 ),
                 html.Div(id="dummy"),
+                dcc.Store(id="image-path", data=str(image_path)),
             ],
             style={"height": "98vh"},
         )
@@ -74,7 +89,32 @@ def get_layout():
     Output("dummy", "children"),
     Input("save-next", "n_clicks"),
     State("figure-annotation", "relayoutData"),
+    State("image-path", "data"),
     prevent_initial_call=True,
 )
-def store_annotations(n_clicks, relayout_data):
-    raise NotImplementedError
+def save_annotations_and_move_input_image(_, relayout_data, input_image_path):
+
+    shapes = relayout_data.get("shapes")
+
+    if shapes is not None:
+        wanted_keys = ["x0", "y0", "x1", "y1"]
+        annotations = pd.DataFrame(
+            [dict((k, shape[k]) for k in wanted_keys if k in shape) for shape in shapes]
+        )
+
+        input_image_path = Path(input_image_path)
+
+        csv_path = ANNOTATED_ROOT / f"annotation_{input_image_path.stem}.csv"
+
+        annotations.to_csv(csv_path, index=False)
+
+        output_image_path = ANNOTATED_ROOT / f"image_{input_image_path.name}"
+        shutil.move(input_image_path, output_image_path)
+
+
+@app.callback(
+    Output("save-next", "disabled"),
+    Input("figure-annotation", "relayoutData"),
+)
+def enable_disable_button(relayout_data):
+    return "shapes" not in relayout_data
