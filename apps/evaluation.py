@@ -4,12 +4,11 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from dash import Input, Output, State, dcc, html
-from matplotlib import pyplot as plt
 from PIL import Image
 
 from app import app
-from dev_client import plot_image_annotations
 from prediction import predict_masks, read_image
+from visualization import visualize_annotation
 
 from . import error_message
 from .paths import ANNOTATED_ROOT, OUTPUT_ROOT
@@ -92,10 +91,9 @@ def evaluate_samples(_, image_paths, csv_paths):
 
         masks = predict_masks(image, boxes)
 
-        plot_image_annotations(image, boxes, masks)
-
         visualization_path = OUTPUT_ROOT / f"visualization_{image_identifier}.png"
-        plt.savefig(visualization_path)
+        visualization = visualize_annotation(image, masks, boxes)
+        visualization.save(visualization_path)
 
         # TODO: Save masks
         # TODO: Add progress bar
