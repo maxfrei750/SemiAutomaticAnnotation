@@ -35,7 +35,7 @@ def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
     return image_paths, csv_paths
 
 
-def get_layout():
+def get_layout() -> html.Div:
     image_paths, csv_paths = gather_image_and_csv_paths()
 
     if csv_paths:
@@ -73,7 +73,7 @@ def get_layout():
     State("csv-paths", "data"),
     prevent_initial_call=True,
 )
-def evaluate_samples(_, image_paths, csv_paths):
+def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
 
     for csv_path, image_path in zip(csv_paths, image_paths):
         image = read_image(image_path)
