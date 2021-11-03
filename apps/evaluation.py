@@ -43,14 +43,11 @@ def get_layout() -> html.Div:
             [
                 html.Center(
                     [
-                        html.Button(
-                            "Evaluate now", id="evaluate", n_clicks=0, style={"margin-top": "75px"}
-                        ),
+                        html.H1("Evaluation"),
                         dcc.Loading(
                             id="loading",
                             type="default",
-                            children=html.Div(id="loading-output"),
-                            style={"margin-top": "75px"},
+                            children=html.Button("start", id="evaluate", n_clicks=0),
                         ),
                     ]
                 ),
@@ -67,7 +64,7 @@ def get_layout() -> html.Div:
 
 
 @app.callback(
-    Output("loading-output", "children"),
+    Output("evaluate", "children"),
     Input("evaluate", "n_clicks"),
     State("image-paths", "data"),
     State("csv-paths", "data"),
@@ -106,3 +103,5 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
         visualization.save(visualization_path)
 
         # TODO: Move input image and annotations to "output"
+
+    return "start"
