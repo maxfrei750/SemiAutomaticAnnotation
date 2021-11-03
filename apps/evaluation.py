@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import List, Tuple
 
-import numpy as np
 import pandas as pd
 from dash import Input, Output, State, dcc, html
 from PIL import Image
@@ -44,11 +43,17 @@ def get_layout():
             [
                 html.Center(
                     [
-                        html.H1("There are annotated images."),
-                        html.Button("Evaluate now", id="evaluate", n_clicks=0),
+                        html.Button(
+                            "Evaluate now", id="evaluate", n_clicks=0, style={"margin-top": "75px"}
+                        ),
+                        dcc.Loading(
+                            id="loading",
+                            type="default",
+                            children=html.Div(id="loading-output"),
+                            style={"margin-top": "75px"},
+                        ),
                     ]
                 ),
-                html.Div(id="dummy1"),
                 dcc.Store(id="image-paths", data=image_paths),
                 dcc.Store(id="csv-paths", data=csv_paths),
             ],
@@ -62,7 +67,7 @@ def get_layout():
 
 
 @app.callback(
-    Output("dummy1", "children"),
+    Output("loading-output", "children"),
     Input("evaluate", "n_clicks"),
     State("image-paths", "data"),
     State("csv-paths", "data"),
@@ -100,6 +105,4 @@ def evaluate_samples(_, image_paths, csv_paths):
         visualization = visualize_annotation(image, masks, boxes)
         visualization.save(visualization_path)
 
-        # TODO: Save masks
-        # TODO: Add progress bar
         # TODO: Move input image and annotations to "output"
