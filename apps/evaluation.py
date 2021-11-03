@@ -91,6 +91,11 @@ def evaluate_samples(_, image_paths, csv_paths):
 
         masks = predict_masks(image, boxes)
 
+        for mask_id, mask in enumerate(masks):
+            mask = mask > 0.5
+            mask_path = OUTPUT_ROOT / f"mask_{image_identifier}_{mask_id}.png"
+            Image.fromarray(mask).save(mask_path)
+
         visualization_path = OUTPUT_ROOT / f"visualization_{image_identifier}.png"
         visualization = visualize_annotation(image, masks, boxes)
         visualization.save(visualization_path)
