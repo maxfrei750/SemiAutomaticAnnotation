@@ -55,7 +55,6 @@ def get_layout():
         }
         layout = html.Div(
             [
-                # html.H1(dcc.Link("Annotation", href="/apps/annotation", refresh=True)),
                 dcc.Graph(
                     figure=figure,
                     config=graph_config,
@@ -68,8 +67,6 @@ def get_layout():
                             "Save & next",
                             id="save-next",
                             n_clicks=0,
-                            # href="/apps/annotation",
-                            # refresh=True,
                         ),
                         href="/apps/annotation",
                     ),
