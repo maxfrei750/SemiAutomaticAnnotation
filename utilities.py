@@ -12,5 +12,5 @@ def read_image(path: AnyPath):
     :return: image [Y, X, 3]
     """
     with tf.io.gfile.GFile(path, "rb") as f:
-        image = Image.open(f)
+        image = Image.open(f).convert("RGB")
         return np.array(image, dtype=np.uint8)
