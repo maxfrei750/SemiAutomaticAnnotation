@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List, Tuple
 
+import numpy as np
 import pandas as pd
 from dash import Input, Output, State, dcc, html
 from PIL import Image
@@ -98,7 +99,8 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
         masks = predict_masks(image, boxes)
 
         for mask_id, mask in enumerate(masks):
-            mask = mask > 0.5
+            mask *= 255
+            mask = mask.astype(np.uint8)
             mask_path = OUTPUT_ROOT / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
 
