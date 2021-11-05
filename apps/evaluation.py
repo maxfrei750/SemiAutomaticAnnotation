@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from typing import List, Tuple
 
@@ -75,8 +76,11 @@ def get_layout() -> html.Div:
 def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
 
     for csv_path, image_path in zip(csv_paths, image_paths):
+        csv_path = Path(csv_path)
+        image_path = Path(image_path)
+
         image = read_image(image_path)
-        image_identifier = Path(csv_path).stem[11:]
+        image_identifier = csv_path.stem[11:]
         boxes = pd.read_csv(csv_path)
         masks = predict_masks(image, boxes)
 
@@ -89,6 +93,7 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
         visualization = visualize_annotation(image, masks, boxes)
         visualization.save(visualization_path)
 
-        # TODO: Move input image and annotations to "output"
+        shutil.move(image_path, OUTPUT_ROOT / image_path.name)
+        shutil.move(csv_path, OUTPUT_ROOT / csv_path.name)
 
     return "start"
