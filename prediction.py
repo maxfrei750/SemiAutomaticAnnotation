@@ -30,8 +30,16 @@ def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
     boxes[boxes < 0] = 0
     boxes[boxes > 1] = 1
 
+    # Ensure that x0<x1 and y0<y1.
+    boxes_unsorted = boxes.copy()
+
+    boxes["x0"] = boxes_unsorted[["x0", "x1"]].min(axis=1)
+    boxes["x1"] = boxes_unsorted[["x0", "x1"]].max(axis=1)
+    boxes["y0"] = boxes_unsorted[["y0", "y1"]].min(axis=1)
+    boxes["y1"] = boxes_unsorted[["y0", "y1"]].max(axis=1)
+
     boxes = boxes.to_numpy().astype(np.float32)
-    height, width, _ = image.shape
+
     inference_url = os.environ["MODEL_API_URL"]
     data = json.dumps(
         {
@@ -48,6 +56,6 @@ def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
     response = requests.post(inference_url, data=data, headers=headers)
     masks = response.json()["predictions"][0]["detection_masks"]
     masks = ops.reframe_box_masks_to_image_masks(
-        tf.convert_to_tensor(masks), tf.convert_to_tensor(boxes), height, width
+        tf.convert_to_tensor(masks), tf.convert_to_tensor(boxes), image_height, image_width
     )
     return masks.numpy()
