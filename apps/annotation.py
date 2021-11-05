@@ -1,9 +1,11 @@
+import os
 import shutil
 from pathlib import Path
 
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
+from PIL import Image
 
 from app import app
 from utilities import read_image
@@ -103,12 +105,17 @@ def save_annotations_and_move_input_image(_, relayout_data, input_image_path):
 
         input_image_path = Path(input_image_path)
 
-        csv_path = ANNOTATED_ROOT / f"annotation_{input_image_path.stem}.csv"
+        image_id = input_image_path.stem
 
+        if image_id.startswith("image_"):  # Catch if the image file name already has the suffix.
+            image_id = image_id[6:]
+
+        csv_path = ANNOTATED_ROOT / f"annotation_{image_id}.csv"
         annotations.to_csv(csv_path, index=False)
 
-        output_image_path = ANNOTATED_ROOT / f"image_{input_image_path.name}"
-        shutil.move(input_image_path, output_image_path)
+        output_image_path = ANNOTATED_ROOT / f"image_{image_id}.png"
+        Image.open(input_image_path).save(output_image_path)
+        os.remove(input_image_path)
 
 
 @app.callback(
