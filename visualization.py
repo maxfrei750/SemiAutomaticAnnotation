@@ -128,7 +128,7 @@ def _color_float_to_int(color_float: ColorFloat) -> ColorInt:
 
 
 def _overlay_image_with_mask(
-    image: PILImage, mask: np.ndarray, color_int: ColorInt, alpha: float = 0.25
+    image: PILImage, mask: np.ndarray, color_int: ColorInt, alpha: float = 0.5
 ) -> PILImage:
     """Overlay an image with a mask.
 
