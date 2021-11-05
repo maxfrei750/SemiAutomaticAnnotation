@@ -123,4 +123,5 @@ def save_annotations_and_move_input_image(_, relayout_data, input_image_path):
     Input("figure-annotation", "relayoutData"),
 )
 def enable_disable_button(relayout_data):
+    # TODO: Fix bug that disables button when zooming into the image.
     return "shapes" not in relayout_data
