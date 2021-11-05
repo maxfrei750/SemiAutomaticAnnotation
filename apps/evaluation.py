@@ -92,6 +92,9 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
 
         boxes = boxes.to_numpy()
 
+        boxes[boxes < 0] = 0
+        boxes[boxes > 1] = 1
+
         masks = predict_masks(image, boxes)
 
         for mask_id, mask in enumerate(masks):
