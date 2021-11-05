@@ -81,8 +81,7 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
         masks = predict_masks(image, boxes)
 
         for mask_id, mask in enumerate(masks):
-            mask *= 255
-            mask = mask.astype(np.uint8)
+            mask = mask > 0.5
             mask_path = OUTPUT_ROOT / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
 
