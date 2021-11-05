@@ -2,6 +2,7 @@ import random
 from typing import List, Optional
 
 import numpy as np
+import pandas as pd
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 from PIL import Image as PILImage
@@ -9,6 +10,7 @@ from PIL import ImageDraw, ImageOps
 from skimage import img_as_ubyte
 
 from custom_types import ColorFloat, ColorInt
+from utilities import sort_box_coordinates
 
 
 def get_viridis_colors(num_colors: int) -> List[ColorFloat]:
@@ -56,18 +58,19 @@ def get_random_viridis_colors(num_colors: int) -> List[ColorFloat]:
 def visualize_annotation(
     image: np.ndarray,
     masks: Optional[np.ndarray] = None,
-    boxes: Optional[np.ndarray] = None,
+    boxes: Optional[pd.DataFrame] = None,
     line_width: int = 3,
 ) -> PILImage:
     """Overlay an image with an annotation of multiple instances.
 
     :param image: Image [Y, W, 3]
     :param masks: numpy array [N, H, W]
-    :param boxes: normalized boxes in {y0,x0,y1,x1} format, numpy array [N, 4]
-    :param display_mask_outlines_only: If true, only the outlines of masks are displayed.
+    :param boxes: pandas dataframe with columns ["y0", "x0", "y1", "x1"]
     :param line_width: Line width for bounding boxes and mask outlines.
     :return: A PIL image object of the original image with overlayed annotations.
     """
+
+    boxes = boxes.copy()
 
     if masks is not None:
         num_instances = len(masks)
@@ -76,21 +79,19 @@ def visualize_annotation(
     else:
         raise ValueError("Neither masks nor boxes were specified.")
 
+    sort_box_coordinates(boxes)
+
     image = img_as_ubyte(image)
     image = PILImage.fromarray(image)
     result = image.convert("RGB")
 
     colors_float = get_random_viridis_colors(num_instances)
 
-    # unnormalize boxes
-    boxes[:, [0, 2]] *= image.height
-    boxes[:, [1, 3]] *= image.width
-
     for (
         mask,
         box,
         color_float,
-    ) in zip(masks, boxes, colors_float):
+    ) in zip(masks, boxes.itertuples(index=False), colors_float):
 
         color_int = _color_float_to_int(color_float)
 
@@ -107,7 +108,9 @@ def visualize_annotation(
 
         if box is not None:
             ImageDraw.Draw(result).rectangle(
-                [(box[1], box[0]), (box[3], box[2])], outline=color_int, width=line_width
+                [box.x0, box.y0, box.x1, box.y1],
+                outline=color_int,
+                width=line_width,
             )
 
     return result
@@ -128,7 +131,7 @@ def _color_float_to_int(color_float: ColorFloat) -> ColorInt:
 
 
 def _overlay_image_with_mask(
-    image: PILImage, mask: np.ndarray, color_int: ColorInt, alpha: float = 0.5
+    image: PILImage, mask: np.ndarray, color_int: ColorInt, alpha: float = 0.3
 ) -> PILImage:
     """Overlay an image with a mask.
 
