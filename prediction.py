@@ -11,11 +11,26 @@ def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
     """Predict instance masks for an image and a given set of boxes.
 
     :param image: input image [Y,X,3]
-    :param boxes: bounding boxes [N, 4]
+    :param boxes: pandas dataframe with columns ["y0", "x0", "y1", "x1"]
     :return: instance masks [N, Y, X]
     """
 
-    boxes = boxes.astype(np.float32)
+    image_height, image_width, _ = image.shape
+
+    # normalize boxes
+    boxes["x0"] /= image_width
+    boxes["y0"] /= image_height
+    boxes["x1"] /= image_width
+    boxes["y1"] /= image_height
+
+    # reorder coordinates
+    boxes = boxes[["y0", "x0", "y1", "x1"]]
+
+    # Remove points outside of the image.
+    boxes[boxes < 0] = 0
+    boxes[boxes > 1] = 1
+
+    boxes = boxes.to_numpy().astype(np.float32)
     height, width, _ = image.shape
     inference_url = os.environ["MODEL_API_URL"]
     data = json.dumps(

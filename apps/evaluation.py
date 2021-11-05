@@ -76,26 +76,8 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
 
     for csv_path, image_path in zip(csv_paths, image_paths):
         image = read_image(image_path)
-        image_height, image_width, _ = image.shape
-
         image_identifier = Path(csv_path).stem[11:]
-
         boxes = pd.read_csv(csv_path)
-
-        # normalize boxes
-        boxes["x0"] /= image_width
-        boxes["y0"] /= image_height
-        boxes["x1"] /= image_width
-        boxes["y1"] /= image_height
-
-        # reorder coordinates
-        boxes = boxes[["y0", "x0", "y1", "x1"]]
-
-        boxes = boxes.to_numpy()
-
-        boxes[boxes < 0] = 0
-        boxes[boxes > 1] = 1
-
         masks = predict_masks(image, boxes)
 
         for mask_id, mask in enumerate(masks):
