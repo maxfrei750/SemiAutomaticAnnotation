@@ -6,7 +6,8 @@ from dash import Input, Output, State, dcc, html
 from PIL import Image
 
 from app import app
-from prediction import predict_masks, read_image
+from prediction import predict_masks
+from utilities import read_image
 from visualization import visualize_annotation
 
 from . import error_message

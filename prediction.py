@@ -5,20 +5,6 @@ import numpy as np
 import requests
 import tensorflow as tf
 from object_detection.utils import ops
-from PIL import Image
-
-from custom_types import AnyPath
-
-
-def read_image(path: AnyPath):
-    """Read an image.
-
-    :param path: input path
-    :return: image [Y, X, 3]
-    """
-    with tf.io.gfile.GFile(path, "rb") as f:
-        image = Image.open(f)
-        return np.array(image, dtype=np.uint8)
 
 
 def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:

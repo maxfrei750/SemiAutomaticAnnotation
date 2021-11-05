@@ -2,7 +2,8 @@ import logging
 
 import numpy as np
 
-from prediction import predict_masks, read_image
+from prediction import predict_masks
+from utilities import read_image
 from visualization import visualize_annotation
 
 logging.disable(logging.WARNING)

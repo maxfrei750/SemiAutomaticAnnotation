@@ -6,7 +6,7 @@ import plotly.express as px
 from dash import Input, Output, State, dcc, html
 
 from app import app
-from prediction import read_image
+from utilities import read_image
 
 from . import error_message
 from .paths import ANNOTATED_ROOT, INPUT_ROOT
