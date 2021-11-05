@@ -2,12 +2,15 @@ import json
 import os
 
 import numpy as np
+import pandas as pd
 import requests
 import tensorflow as tf
 from object_detection.utils import ops
 
+from utilities import sort_box_coordinates
 
-def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
+
+def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
     """Predict instance masks for an image and a given set of boxes.
 
     :param image: input image [Y,X,3]
@@ -16,6 +19,8 @@ def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
     """
 
     image_height, image_width, _ = image.shape
+
+    boxes = boxes.copy()
 
     # normalize boxes
     boxes["x0"] /= image_width
@@ -30,13 +35,7 @@ def predict_masks(image: np.ndarray, boxes: np.ndarray) -> np.ndarray:
     boxes[boxes < 0] = 0
     boxes[boxes > 1] = 1
 
-    # Ensure that x0<x1 and y0<y1.
-    boxes_unsorted = boxes.copy()
-
-    boxes["x0"] = boxes_unsorted[["x0", "x1"]].min(axis=1)
-    boxes["x1"] = boxes_unsorted[["x0", "x1"]].max(axis=1)
-    boxes["y0"] = boxes_unsorted[["y0", "y1"]].min(axis=1)
-    boxes["y1"] = boxes_unsorted[["y0", "y1"]].max(axis=1)
+    sort_box_coordinates(boxes)
 
     boxes = boxes.to_numpy().astype(np.float32)
 
