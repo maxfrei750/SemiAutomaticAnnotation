@@ -1,6 +1,6 @@
 from pathlib import Path
 
-ROOT = Path("/home/tensorflow/")
+ROOT = Path("/home/tensorflow/data")
 INPUT_ROOT = ROOT / "input"
 ANNOTATED_ROOT = ROOT / "annotated"
 OUTPUT_ROOT = ROOT / "output"

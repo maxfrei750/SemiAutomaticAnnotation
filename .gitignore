@@ -81,6 +81,6 @@ build
 *.egg-info
 
 # Custom
-/input
-/annotated
-/output
+/data/input
+/data/annotated
+/data/output
