@@ -2,7 +2,6 @@ import shutil
 from pathlib import Path
 from typing import List, Tuple
 
-import numpy as np
 import pandas as pd
 from dash import Input, Output, State, dcc, html
 from PIL import Image
