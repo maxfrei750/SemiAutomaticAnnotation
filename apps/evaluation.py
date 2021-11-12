@@ -60,7 +60,8 @@ def get_layout() -> html.Div:
         )
     else:
         layout = error_message.get_layout(
-            "There are no valid pairs of csv- and image-files in folder 'annotated'."
+            "There are no valid pairs of csv- and image-files in folder 'annotated'.",
+            [dcc.Link("Menu", href="/apps/menu")],
         )
     return layout
 

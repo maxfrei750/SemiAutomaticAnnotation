@@ -78,7 +78,7 @@ def get_graph(image_path):
 def get_graph_or_message(image_path):
     if image_path is None:
         return error_message.get_layout(
-            "No files in folder 'input'.", [dcc.Link("Evaluation", href="/apps/evaluation")]
+            "No files in folder 'input'.", [dcc.Link("Menu", href="/apps/menu")]
         )
     else:
         return get_graph(image_path)
