@@ -1,5 +1,8 @@
 from dash import dcc, html
 
+# TODO: Type annotations.
+# TODO: Documentation.
+
 
 def get_layout():
     layout = html.Center(

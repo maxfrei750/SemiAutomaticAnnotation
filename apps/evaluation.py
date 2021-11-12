@@ -14,6 +14,9 @@ from visualization import visualize_annotation
 from . import error_message
 from .paths import ANNOTATED_ROOT, OUTPUT_ROOT
 
+# TODO: Type annotations.
+# TODO: Documentation.
+
 
 def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
     csv_paths_unfiltered = list(ANNOTATED_ROOT.glob("*.csv"))
@@ -88,6 +91,8 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
             mask = mask > 0.5
             mask_path = OUTPUT_ROOT / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
+
+        # TODO: Ensure that there is an output directory.
 
         visualization_path = OUTPUT_ROOT / f"visualization_{image_identifier}.png"
         visualization = visualize_annotation(image, masks, boxes)

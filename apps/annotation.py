@@ -14,6 +14,9 @@ from utilities import read_image
 from . import error_message
 from .paths import ANNOTATED_ROOT, INPUT_ROOT
 
+# TODO: Type annotations.
+# TODO: Documentation.
+
 
 def style_cursor(figure):
     # Style cursor
@@ -124,6 +127,8 @@ def save_annotations_and_move_input_image(_, relayout_data, image_path):
 
     if image_id.startswith("image_"):  # Catch if the image file name already has the suffix.
         image_id = image_id[6:]
+
+    # TODO: Ensure that there is an annotation directory.
 
     csv_path = ANNOTATED_ROOT / f"annotation_{image_id}.csv"
     annotations.to_csv(csv_path, index=False)

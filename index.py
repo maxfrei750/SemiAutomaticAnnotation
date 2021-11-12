@@ -8,6 +8,10 @@ from apps import annotation, evaluation, menu
 
 PORT_FRONTEND = int(os.environ["PORT_FRONTEND"])
 
+# TODO: Type annotations.
+# TODO: Documentation.
+
+
 app.layout = html.Div([dcc.Location(id="url", refresh=False), html.Div(id="page-content")])
 
 

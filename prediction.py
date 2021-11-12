@@ -9,6 +9,9 @@ from object_detection.utils import ops
 
 from utilities import sort_box_coordinates
 
+# TODO: Type annotations.
+# TODO: Documentation.
+
 
 def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
     """Predict instance masks for an image and a given set of boxes.
