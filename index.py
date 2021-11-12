@@ -4,7 +4,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 
 from app import app
-from apps import annotation, evaluation, menu
+from apps import annotation, evaluation, menu, results
 
 PORT_FRONTEND = int(os.environ["PORT_FRONTEND"])
 
@@ -21,6 +21,8 @@ def display_page(pathname):
         return annotation.get_layout()
     elif pathname == "/apps/evaluation":
         return evaluation.get_layout()
+    elif pathname == "/apps/results":
+        return results.get_layout()
     else:
         return menu.get_layout()
 

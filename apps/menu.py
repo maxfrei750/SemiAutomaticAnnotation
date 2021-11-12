@@ -12,6 +12,7 @@ def get_layout():
                 html.Br(),
                 html.H1(dcc.Link("Annotation", href="/apps/annotation")),
                 html.H1(dcc.Link("Evaluation", href="/apps/evaluation")),
+                html.H1(dcc.Link("Results", href="/apps/results")),
             ]
         )
     )
