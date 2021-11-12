@@ -5,8 +5,10 @@ from PIL import Image
 
 from custom_types import AnyPath
 
+# TODO: Create module utilities. Move visualization and prediction there.
 
-def read_image(path: AnyPath):
+
+def read_image(path: AnyPath) -> np.array:
     """Read an image.
 
     :param path: input path
@@ -17,8 +19,13 @@ def read_image(path: AnyPath):
         return np.array(image, dtype=np.uint8)
 
 
-def sort_box_coordinates(boxes: pd.DataFrame):
-    # Ensure that x0<x1 and y0<y1.
+def sort_box_coordinates(boxes: pd.DataFrame) -> pd.DataFrame:
+    """Ensure that x0<x1 and y0<y1.
+
+    :param boxes: dataframe with columns ["x0", "x1", "y0", "y1"].
+    :return: dataframe with columns ["x0", "x1", "y0", "y1"], where x0<x1 and y0<y1.
+    """
+
     boxes_unsorted = boxes.copy()
     boxes["x0"] = boxes_unsorted[["x0", "x1"]].min(axis=1)
     boxes["x1"] = boxes_unsorted[["x0", "x1"]].max(axis=1)
