@@ -21,11 +21,10 @@ def read_image(path: AnyPath) -> np.array:
         return np.array(image, dtype=np.uint8)
 
 
-def sort_box_coordinates(boxes: pd.DataFrame) -> pd.DataFrame:
+def sort_box_coordinates(boxes: pd.DataFrame):
     """Ensure that x0<x1 and y0<y1.
 
     :param boxes: dataframe with columns ["x0", "x1", "y0", "y1"].
-    :return: dataframe with columns ["x0", "x1", "y0", "y1"], where x0<x1 and y0<y1.
     """
 
     boxes_unsorted = boxes.copy()
