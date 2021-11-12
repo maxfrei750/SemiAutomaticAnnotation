@@ -1,0 +1,4 @@
+# .gitignore to keep just the .gitignore file itself and be able to commit the empty input folder.
+
+*
+!.gitignore
