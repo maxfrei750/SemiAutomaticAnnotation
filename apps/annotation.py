@@ -46,13 +46,21 @@ def style_annotations(figure):
 
 def get_layout():
 
-    image_path = str(get_current_image_path())
+    image_path = get_current_image_path()
 
     layout = html.Div(
         [
-            html.Div(get_graph(image_path), style={"height": "90%"}, id="graph-or-message"),
+            html.Div(
+                get_graph_or_message(image_path), style={"height": "90%"}, id="graph-or-message"
+            ),
             html.Center(
-                html.Button("Save & next", id="save-next", n_clicks=0, disabled=True),
+                html.Button(
+                    "Save & next",
+                    id="save-next",
+                    n_clicks=0,
+                    disabled=True,
+                    hidden=image_path is None,
+                ),
             ),
             dcc.Store(id="image-path", data=str(image_path)),
         ],
@@ -94,11 +102,19 @@ def get_figure(image_path: AnyPath):
         style_annotations(figure)
         style_cursor(figure)
 
+        # TODO: Position mode bar at the center above the graph.
+
+        figure.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            modebar={"bgcolor": "rgba(0,0,0,0)"},
+        )
+
         return figure
 
 
 def get_current_image_path() -> Optional[AnyPath]:
-    image_paths = sorted(list(INPUT_ROOT.glob("*.*")))
+    image_paths = sorted(list(INPUT_ROOT.glob("?*.*")))
     if image_paths:
         return image_paths[0]
 
