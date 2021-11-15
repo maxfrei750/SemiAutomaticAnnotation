@@ -2,10 +2,10 @@ import base64
 from typing import List
 
 import dash_bootstrap_components as dbc
-from dash import dcc, html
+from dash import html
 from dash.development.base_component import Component
 
-from apps import error_message
+import custom_components
 from utilities.custom_types import AnyPath
 from utilities.paths import OUTPUT_ROOT
 
@@ -60,8 +60,14 @@ def get_layout() -> Component:
         )
 
     else:
-        layout = error_message.get_layout(
-            "There are no results yet.", [dcc.Link("Menu", href="/apps/menu")]
+        layout = custom_components.Message(
+            [
+                "There are currently no results in the './data/output' folder. This can be either because you did not ",
+                html.A("annotate", href="/apps/annotation"),
+                " and/or ",
+                html.A("evaluate", href="/apps/evaluation"),
+                """ any images yet.""",
+            ]
         )
 
     return layout

@@ -2,18 +2,18 @@ import shutil
 from pathlib import Path
 from typing import List, Tuple
 
+import dash_bootstrap_components as dbc
 import pandas as pd
 from dash import Input, Output, State, dcc, html
 from dash.development.base_component import Component
 from PIL import Image
 
+import custom_components
 from app import app
 from utilities.data import read_image
 from utilities.paths import ANNOTATED_ROOT, OUTPUT_ROOT
 from utilities.prediction import predict_masks
 from utilities.visualization import visualize_annotation
-
-from . import error_message
 
 # TODO: Reload page after evaluation.
 
@@ -73,9 +73,15 @@ def get_layout() -> Component:
             style={"height": "98vh"},
         )
     else:
-        layout = error_message.get_layout(
-            "There are no valid pairs of csv- and image-files in folder 'annotated'.",
-            [dcc.Link("Menu", href="/apps/menu")],
+        layout = custom_components.Message(
+            [
+                """There are currently no valid pairs of csv- and image-files in the './data/annotated' folder. This can
+                 be either because you did not """,
+                html.A("annotate", href="/apps/annotation"),
+                """ any images yet, or because all your images were already evaluated and can now be found in the """,
+                html.A("results", href="/apps/results"),
+                ".",
+            ]
         )
     return layout
 

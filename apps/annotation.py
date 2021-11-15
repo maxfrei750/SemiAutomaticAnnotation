@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union
 
+import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
@@ -9,12 +10,11 @@ from dash.development.base_component import Component
 from PIL import Image
 from plotly.graph_objects import Figure
 
+import custom_components
 from app import app
 from utilities.custom_types import AnyPath
 from utilities.data import read_image
 from utilities.paths import ANNOTATED_ROOT, INPUT_ROOT
-
-from . import error_message
 
 
 def style_cursor(figure: Figure):
@@ -107,8 +107,13 @@ def get_graph_or_message(image_path: Optional[AnyPath]) -> Union[dcc.Graph, Comp
     :return: Either a plotly graph with an image or a html component showing an error message.
     """
     if image_path is None:
-        return error_message.get_layout(
-            "No files in folder 'input'.", [dcc.Link("Menu", href="/apps/menu")]
+        return custom_components.Message(
+            [
+                """There are currently no files in the './data/input' folder. Please put some images that you want to 
+                annotate into the folder and refresh this page by clicking """,
+                html.A("here", href="/apps/annotation"),
+                " or pressing F5 on your keyboard.",
+            ]
         )
     else:
         return get_graph(image_path)
