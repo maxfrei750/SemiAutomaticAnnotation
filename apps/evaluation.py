@@ -58,7 +58,10 @@ def get_layout() -> Component:
                         dcc.Loading(
                             id="loading",
                             type="default",
-                            children=html.Button("start", id="evaluate", n_clicks=0),
+                            children=[
+                                html.Button("start", id="evaluate", n_clicks=0),
+                                html.Div(id="dummy"),
+                            ],
                         ),
                     ]
                 ),
@@ -76,7 +79,7 @@ def get_layout() -> Component:
 
 
 @app.callback(
-    Output("evaluate", "children"),
+    Output("dummy", "children"),
     Input("evaluate", "n_clicks"),
     State("image-paths", "data"),
     State("csv-paths", "data"),
@@ -88,7 +91,6 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
     :param _: Mandatory callback input. Unused.
     :param image_paths: List of input image paths.
     :param csv_paths:  List of annotation csv paths.
-    :return: "start" to satisfy loading container. To be changed in the future.
     """
 
     for csv_path, image_path in zip(csv_paths, image_paths):
@@ -113,6 +115,3 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
 
         shutil.move(image_path, OUTPUT_ROOT / image_path.name)
         shutil.move(csv_path, OUTPUT_ROOT / csv_path.name)
-
-    # TODO: Use dummy div in loading container as output.
-    return "start"
