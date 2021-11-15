@@ -22,13 +22,13 @@ def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
 
     boxes = boxes.copy()
 
-    # normalize boxes
+    # Normalize boxes.
     boxes["x0"] /= image_width
     boxes["y0"] /= image_height
     boxes["x1"] /= image_width
     boxes["y1"] /= image_height
 
-    # reorder coordinates
+    # Reorder coordinates.
     boxes = boxes[["y0", "x0", "y1", "x1"]]
 
     # Remove points outside of the image.
@@ -40,6 +40,9 @@ def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
     boxes = boxes.to_numpy().astype(np.float32)
 
     inference_url = os.environ["MODEL_API_URL"]
+
+    # TODO: Handle more than 100 instances per image, by splitting boxes into sets of length 100.
+
     data = json.dumps(
         {
             "signature_name": "serving_default",

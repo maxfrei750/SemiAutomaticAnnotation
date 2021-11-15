@@ -36,8 +36,6 @@ def get_layout() -> Component:
     """
     visualization_paths = gather_visualization_paths()
 
-    # TODO: Use bootstrap layout to have a correct aspect ration etc.
-
     if visualization_paths:
         carousel_items = [
             {
@@ -45,18 +43,25 @@ def get_layout() -> Component:
                 "src": b64_image(image_path),
                 "img_style": {
                     "max-width": "80%",
-                    "max-height": "90vh",
-                    "height": "auto",
+                    "height": "80vh",
+                    "object-fit": "contain",
                     "margin-left": "auto",
                     "margin-right": "auto",
-                    "margin-bottom": "10vh",
+                    "margin-bottom": "5%",
                 },
             }
             for image_id, image_path in enumerate(visualization_paths)
         ]
 
-        layout = html.Div(
-            dbc.Carousel(items=carousel_items, controls=True, indicators=True),
+        layout = dbc.Col(
+            dbc.Carousel(
+                items=carousel_items,
+                controls=True,
+                indicators=True,
+                style={"height": "100%"},
+            ),
+            className="d-flex flex-column",
+            style={"margin-top": "2%"},
         )
 
     else:

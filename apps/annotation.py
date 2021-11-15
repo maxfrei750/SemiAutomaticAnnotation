@@ -57,23 +57,28 @@ def get_layout() -> Component:
 
     image_path = get_current_image_path()
 
-    layout = html.Div(
+    layout = dbc.Col(
         [
-            html.Div(
-                get_graph_or_message(image_path), style={"height": "90%"}, id="graph-or-message"
+            dbc.Row(
+                get_graph_or_message(image_path),
+                id="graph-or-message",
+                className="flex-fill",
             ),
-            html.Center(
-                html.Button(
-                    "Save & next",
-                    id="save-next",
-                    n_clicks=0,
-                    disabled=True,
-                    hidden=image_path is None,
+            dbc.Row(
+                dbc.Col(
+                    dbc.Button(
+                        "Save & next",
+                        id="save-next",
+                        n_clicks=0,
+                        disabled=True,
+                        className="invisible" if image_path is None else "visible",
+                    ),
+                    className="text-center",
                 ),
             ),
             dcc.Store(id="image-path", data=str(image_path)),
         ],
-        style={"height": "100vh"},
+        className="d-flex flex-column",
     )
 
     return layout
@@ -96,7 +101,6 @@ def get_graph(image_path: AnyPath) -> dcc.Graph:
         config=graph_config,
         id="graph-annotation",
         figure=get_figure(image_path),
-        style={"height": "100%"},
     )
 
 
@@ -109,10 +113,12 @@ def get_graph_or_message(image_path: Optional[AnyPath]) -> Union[dcc.Graph, Comp
     if image_path is None:
         return custom_components.Message(
             [
-                """There are currently no files in the './data/input' folder. Please put some images that you want to 
-                annotate into the folder and refresh this page by clicking """,
-                html.A("here", href="/apps/annotation"),
-                " or pressing F5 on your keyboard.",
+                """There are currently no files in the './data/input' folder. Either put some images that you want to 
+                annotate into the folder and """,
+                html.A("refresh", href="/apps/annotation"),
+                " this page, or ",
+                html.A("evaluate", href="/apps/evaluation"),
+                " previously annotated images.",
             ]
         )
     else:
@@ -134,7 +140,8 @@ def get_figure(image_path: Optional[AnyPath]) -> Figure:
         figure.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            modebar={"bgcolor": "rgba(0,0,0,0)"},
+            modebar=dict(bgcolor="rgba(0,0,0,0)"),
+            margin=dict(l=20, r=20, t=40, b=20),
         )
 
         return figure
@@ -153,7 +160,7 @@ def get_current_image_path() -> Optional[AnyPath]:
 @app.callback(
     Output("graph-or-message", "children"),
     Output("image-path", "data"),
-    Output("save-next", "hidden"),
+    Output("save-next", "className"),
     Input("save-next", "n_clicks"),
     State("graph-annotation", "relayoutData"),
     State("image-path", "data"),
@@ -161,7 +168,7 @@ def get_current_image_path() -> Optional[AnyPath]:
 )
 def save_annotations_and_move_input_image(
     _, relayout_data: Optional[Dict], image_path: str
-) -> Tuple[Union[dcc.Graph, Component], str, bool]:
+) -> Tuple[Union[dcc.Graph, Component], str, str]:
     """Save annotations as csv-file. Move csv file and image file to the `annotated` folder.
 
     :param _: Mandatory input for the callback. Unused.
@@ -195,9 +202,10 @@ def save_annotations_and_move_input_image(
 
     image_path = get_current_image_path()
 
-    hidden = image_path is None
+    button_class = "invisible" if image_path is None else "visible"
 
-    return get_graph_or_message(image_path), str(image_path), hidden
+    # TODO: Load evaluation app, if there are no more images.
+    return get_graph_or_message(image_path), str(image_path), button_class
 
 
 @app.callback(
@@ -210,6 +218,8 @@ def disable_button(relayout_data: Optional[Dict]) -> bool:
     :param relayout_data: Graph annotation data.
     :return: True, if the button should be activated, false, if not.
     """
+
+    # TODO: Fix bug, where button is disabled after zooming. Maybe using an interval?
 
     if relayout_data is None:
         return True

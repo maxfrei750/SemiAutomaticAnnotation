@@ -2,3 +2,7 @@
     left: 50%;
     transform: translateX(-28px); /* width of a single button*/
 }
+
+body, html {
+    height: 100%;
+}

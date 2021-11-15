@@ -1,6 +1,8 @@
 import os
+from typing import Tuple
 
-from dash import dcc, html
+import dash_bootstrap_components as dbc
+from dash import dcc
 from dash.dependencies import Input, Output
 from dash.development.base_component import Component
 
@@ -9,25 +11,42 @@ from apps import annotation, evaluation, menu, results
 
 PORT_FRONTEND = int(os.environ["PORT_FRONTEND"])
 
+app.layout = dbc.Container(
+    [
+        dbc.Row(dcc.Location(id="url", refresh=True)),
+        dbc.Row(id="navigation", className="bg-secondary"),
+        dbc.Row(
+            id="page-content",
+            style={"margin-bottom": "1vh"},
+            className="flex-fill",
+        ),
+    ],
+    fluid=True,
+    className="vh-100 d-flex flex-column",
+)
 
-app.layout = html.Div([dcc.Location(id="url", refresh=False), html.Div(id="page-content")])
 
-
-@app.callback(Output("page-content", "children"), Input("url", "pathname"))
-def display_page(path_name: str) -> Component:
+@app.callback(
+    Output("page-content", "children"),
+    Output("navigation", "children"),
+    Output("url", "pathname"),
+    Input("url", "pathname"),
+)
+def display_page(path_name: str) -> Tuple[Component, Component, str]:
     """Display an app, according to the specified path name.
 
-    :param path_name: Path of the url.
-    :return: Layout of an app, according to the path name.
+    :param path_name: Path of the current url.
+    :return: Layout of an app and the menu, according to the path name.
     """
-    if path_name == "/apps/annotation":
-        return annotation.get_layout()
-    elif path_name == "/apps/evaluation":
-        return evaluation.get_layout()
+    if path_name == "/apps/evaluation":
+        page_layout = evaluation.get_layout()
     elif path_name == "/apps/results":
-        return results.get_layout()
+        page_layout = results.get_layout()
     else:
-        return menu.get_layout()
+        path_name = "/apps/annotation"
+        page_layout = annotation.get_layout()
+
+    return page_layout, menu.get_layout(), path_name
 
 
 if __name__ == "__main__":

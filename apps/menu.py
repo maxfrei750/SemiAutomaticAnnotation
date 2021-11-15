@@ -1,22 +1,23 @@
-from dash import dcc, html
+from pathlib import Path
+
+import dash_bootstrap_components as dbc
 from dash.development.base_component import Component
 
 
 def get_layout() -> Component:
-    """Get layout of the main menu.
+    """Get layout of the menu.
 
     :return: Layout of the main menu.
     """
-    layout = html.Center(
-        html.Div(
-            [
-                html.Br(),
-                html.Br(),
-                html.H1(dcc.Link("Annotation", href="/apps/annotation")),
-                html.H1(dcc.Link("Evaluation", href="/apps/evaluation")),
-                html.H1(dcc.Link("Results", href="/apps/results")),
-            ]
-        )
-    )
+
+    path_names = ["/apps/annotation", "/apps/evaluation", "/apps/results"]
+
+    nav_items = []
+
+    for path_name in path_names:
+        title = str(Path(path_name).name).capitalize()
+        nav_items.append(dbc.NavItem(dbc.NavLink(title, active="partial", href=path_name)))
+
+    layout = dbc.Col(dbc.Nav(nav_items, horizontal=True, pills=True, justified=True))
 
     return layout

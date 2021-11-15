@@ -16,6 +16,7 @@ from utilities.prediction import predict_masks
 from utilities.visualization import visualize_annotation
 
 # TODO: Reload page after evaluation.
+# TODO: Progressbar? Store the initial number of files and compare with current number.
 
 
 def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
@@ -56,29 +57,27 @@ def get_layout() -> Component:
             [
                 html.Center(
                     [
-                        html.H1("Evaluation"),
-                        dcc.Loading(
+                        dbc.Spinner(
                             id="loading",
-                            type="default",
+                            # type="default",
                             children=[
-                                html.Button("start", id="evaluate", n_clicks=0),
+                                dbc.Button("start", id="evaluate", n_clicks=0),
                                 html.Div(id="dummy"),
                             ],
                         ),
-                    ]
+                    ],
+                    style={"margin-top": "10%"},
                 ),
                 dcc.Store(id="image-paths", data=image_paths),
                 dcc.Store(id="csv-paths", data=csv_paths),
             ],
-            style={"height": "98vh"},
         )
     else:
         layout = custom_components.Message(
             [
-                """There are currently no valid pairs of csv- and image-files in the './data/annotated' folder. This can
-                 be either because you did not """,
+                "There are currently no valid pairs of csv- and image-files in the './data/annotated' folder. Either ",
                 html.A("annotate", href="/apps/annotation"),
-                """ any images yet, or because all your images were already evaluated and can now be found in the """,
+                " some images, or inspect previously evaluated ",
                 html.A("results", href="/apps/results"),
                 ".",
             ]
@@ -123,3 +122,5 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
 
         shutil.move(image_path, OUTPUT_ROOT / image_path.name)
         shutil.move(csv_path, OUTPUT_ROOT / csv_path.name)
+
+        # TODO: Automatically load results.
