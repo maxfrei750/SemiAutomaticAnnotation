@@ -181,7 +181,7 @@ def save_annotations_and_move_input_image(
     if image_id.startswith("image_"):  # Catch if the image file name already has the suffix.
         image_id = image_id[6:]
 
-    # TODO: Ensure that there is an annotation directory.
+    ANNOTATED_ROOT.mkdir(exist_ok=True, parents=True)
 
     csv_path = ANNOTATED_ROOT / f"annotation_{image_id}.csv"
     annotations.to_csv(csv_path, index=False)

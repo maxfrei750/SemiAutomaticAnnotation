@@ -107,7 +107,7 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
             mask_path = OUTPUT_ROOT / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
 
-        # TODO: Ensure that there is an output directory.
+        OUTPUT_ROOT.mkdir(exist_ok=True, parents=True)
 
         visualization_path = OUTPUT_ROOT / f"visualization_{image_identifier}.png"
         visualization = visualize_annotation(image, masks, boxes)
