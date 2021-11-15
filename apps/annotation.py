@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Dict, Optional, Tuple, Union
 
 import pandas as pd
 import plotly.express as px
 from dash import Input, Output, State, dcc, html
+from dash.development.base_component import Component
 from PIL import Image
+from plotly.graph_objects import Figure
 
 from app import app
 from custom_types import AnyPath
@@ -14,12 +16,12 @@ from utilities import read_image
 from . import error_message
 from .paths import ANNOTATED_ROOT, INPUT_ROOT
 
-# TODO: Type annotations.
-# TODO: Documentation.
 
+def style_cursor(figure: Figure):
+    """Style the cursor of a figure to allow an easy annotation.
 
-def style_cursor(figure):
-    # Style cursor
+    :param figure: Plotly figure.
+    """
     crosshair_kwargs = {
         "showspikes": True,
         "spikemode": "across",
@@ -32,8 +34,11 @@ def style_cursor(figure):
     figure.update_traces(hoverinfo="none", hovertemplate="")
 
 
-def style_annotations(figure):
-    # Style annotation
+def style_annotations(figure: Figure):
+    """Style the annotations of a figure.
+
+    :param figure: Plotly figure.
+    """
     figure.update_layout(
         dragmode="drawrect",
         newshape={
@@ -44,7 +49,11 @@ def style_annotations(figure):
     )
 
 
-def get_layout():
+def get_layout() -> Component:
+    """Return the layout of the annotation app.
+
+    :return: Layout of the annotation app.
+    """
 
     image_path = get_current_image_path()
 
@@ -70,7 +79,12 @@ def get_layout():
     return layout
 
 
-def get_graph(image_path):
+def get_graph(image_path: AnyPath) -> dcc.Graph:
+    """Get a graph suitable for annotation, with an image.
+
+    :param image_path: Path of the image.
+    :return: Plotly graph.
+    """
     graph_config = {
         "displaylogo": False,
         "displayModeBar": True,
@@ -86,7 +100,12 @@ def get_graph(image_path):
     )
 
 
-def get_graph_or_message(image_path):
+def get_graph_or_message(image_path: Optional[AnyPath]) -> Union[dcc.Graph, Component]:
+    """Get either an annotation graph or an error message, if there is no image.
+
+    :param image_path: Path to an image. Can be `None`.
+    :return: Either a plotly graph with an image or a html component showing an error message.
+    """
     if image_path is None:
         return error_message.get_layout(
             "No files in folder 'input'.", [dcc.Link("Menu", href="/apps/menu")]
@@ -95,7 +114,12 @@ def get_graph_or_message(image_path):
         return get_graph(image_path)
 
 
-def get_figure(image_path: AnyPath):
+def get_figure(image_path: Optional[AnyPath]) -> Figure:
+    """Get a figure showing an image, styled for annotation.
+
+    :param image_path: Path to the image. Can be `None`.
+    :return: Plotly figure that is styled for annotation, showing an image, or None, if there is no image.
+    """
     if image_path is not None:
         image = read_image(image_path)
         figure = px.imshow(image)
@@ -114,6 +138,10 @@ def get_figure(image_path: AnyPath):
 
 
 def get_current_image_path() -> Optional[AnyPath]:
+    """Get the first image in the `input` folder.
+
+    :return: Path of the first image in the `input` folder.
+    """
     image_paths = sorted(list(INPUT_ROOT.glob("?*.*")))
     if image_paths:
         return image_paths[0]
@@ -128,7 +156,16 @@ def get_current_image_path() -> Optional[AnyPath]:
     State("image-path", "data"),
     prevent_initial_call=True,
 )
-def save_annotations_and_move_input_image(_, relayout_data, image_path):
+def save_annotations_and_move_input_image(
+    _, relayout_data: Optional[Dict], image_path: str
+) -> Tuple[Union[dcc.Graph, Component], str, bool]:
+    """Save annotations as csv-file. Move csv file and image file to the `annotated` folder.
+
+    :param _: Mandatory input for the callback. Unused.
+    :param relayout_data: Dictionary, holding information about the annotations.
+    :param image_path: Path of the input image.
+    :return: Graph of for the annotation of the next image or message saying that there are no more images.
+    """
 
     shapes = relayout_data.get("shapes")
 
@@ -164,7 +201,12 @@ def save_annotations_and_move_input_image(_, relayout_data, image_path):
     Output("save-next", "disabled"),
     Input("graph-annotation", "relayoutData"),
 )
-def disable_button(relayout_data):
+def disable_button(relayout_data: Optional[Dict]) -> bool:
+    """Check if the `Save & next` button should be activated or not. )
+
+    :param relayout_data: Graph annotation data.
+    :return: True, if the button should be activated, false, if not.
+    """
 
     if relayout_data is None:
         return True

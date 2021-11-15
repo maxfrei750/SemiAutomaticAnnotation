@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 import pandas as pd
 from dash import Input, Output, State, dcc, html
+from dash.development.base_component import Component
 from PIL import Image
 
 from app import app
@@ -14,11 +15,12 @@ from visualization import visualize_annotation
 from . import error_message
 from .paths import ANNOTATED_ROOT, OUTPUT_ROOT
 
-# TODO: Type annotations.
-# TODO: Documentation.
-
 
 def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
+    """Gather pairs of images and csv annotation files.
+
+    :return: List of image paths and list of csv paths.
+    """
     csv_paths_unfiltered = list(ANNOTATED_ROOT.glob("*.csv"))
 
     image_paths = []
@@ -40,7 +42,11 @@ def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
     return image_paths, csv_paths
 
 
-def get_layout() -> html.Div:
+def get_layout() -> Component:
+    """Get the layout of the evaluation app.
+
+    :return: Layout of the evaluation app.
+    """
     image_paths, csv_paths = gather_image_and_csv_paths()
 
     if csv_paths:
@@ -77,6 +83,13 @@ def get_layout() -> html.Div:
     prevent_initial_call=True,
 )
 def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
+    """Evaluate samples.
+
+    :param _: Mandatory callback input. Unused.
+    :param image_paths: List of input image paths.
+    :param csv_paths:  List of annotation csv paths.
+    :return: "start" to satisfy loading container. To be changed in the future.
+    """
 
     for csv_path, image_path in zip(csv_paths, image_paths):
         csv_path = Path(csv_path)
@@ -101,4 +114,5 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
         shutil.move(image_path, OUTPUT_ROOT / image_path.name)
         shutil.move(csv_path, OUTPUT_ROOT / csv_path.name)
 
+    # TODO: Use dummy div in loading container as output.
     return "start"

@@ -1,10 +1,12 @@
 from dash import dcc, html
-
-# TODO: Type annotations.
-# TODO: Documentation.
+from dash.development.base_component import Component
 
 
-def get_layout():
+def get_layout() -> Component:
+    """Get layout of the main menu.
+
+    :return: Layout of the main menu.
+    """
     layout = html.Center(
         html.Div(
             [

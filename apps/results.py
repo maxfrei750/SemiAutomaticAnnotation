@@ -1,32 +1,45 @@
 import base64
+from typing import List
 
 import dash_bootstrap_components as dbc
 from dash import dcc, html
+from dash.development.base_component import Component
 
 from apps import error_message
+from custom_types import AnyPath
 
 from .paths import OUTPUT_ROOT
 
-# TODO: Type annotations.
-# TODO: Documentation.
 
+def gather_visualization_paths() -> List[AnyPath]:
+    """Gather paths of visualization images.
 
-def gather_image_paths():
+    :return: List of paths of visualization images.
+    """
     return sorted(list(OUTPUT_ROOT.glob("visualization_*.*")))
 
 
-def b64_image(image_filename):
-    with open(image_filename, "rb") as f:
+def b64_image(image_path: AnyPath) -> str:
+    """Read an image and encode it as base64.
+
+    :param image_path: path to an image
+    :return: Image, encoded as base64.
+    """
+    with open(image_path, "rb") as f:
         image = f.read()
     return "data:image/png;base64," + base64.b64encode(image).decode("utf-8")
 
 
-def get_layout():
-    image_paths = gather_image_paths()
+def get_layout() -> Component:
+    """Get the layout of the results app.
+
+    :return: Layout of the results app.
+    """
+    visualization_paths = gather_visualization_paths()
 
     # TODO: Use bootstrap layout to have a correct aspect ration etc.
 
-    if image_paths:
+    if visualization_paths:
         carousel_items = [
             {
                 "key": str(image_id),
@@ -40,7 +53,7 @@ def get_layout():
                     "margin-bottom": "10vh",
                 },
             }
-            for image_id, image_path in enumerate(image_paths)
+            for image_id, image_path in enumerate(visualization_paths)
         ]
 
         layout = html.Div(

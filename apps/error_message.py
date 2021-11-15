@@ -1,13 +1,16 @@
 from typing import List, Optional
 
 from dash import dcc, html
-
-# TODO: Type annotations.
-# TODO: Documentation.
+from dash.development.base_component import Component
 
 
-def get_layout(message: str, links: Optional[List[dcc.Link]] = None):
+def get_layout(message: str, links: Optional[List[dcc.Link]] = None) -> Component:
+    """Get the layout of an error message, with optional links for the user.
 
+    :param message: Message to be displayed.
+    :param links: Optional links for the user to click.
+    :return: Layout of the message.
+    """
     if links is None:
         links = []
 

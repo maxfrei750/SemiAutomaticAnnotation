@@ -6,8 +6,6 @@ from PIL import Image
 from custom_types import AnyPath
 
 # TODO: Create module utilities. Move visualization and prediction there.
-# TODO: Type annotations.
-# TODO: Documentation.
 
 
 def read_image(path: AnyPath) -> np.array:
