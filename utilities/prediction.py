@@ -7,7 +7,7 @@ import requests
 import tensorflow as tf
 from object_detection.utils import ops
 
-from utilities import sort_box_coordinates
+from utilities.data import sort_box_coordinates
 
 
 def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:

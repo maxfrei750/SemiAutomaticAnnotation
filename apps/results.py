@@ -6,9 +6,8 @@ from dash import dcc, html
 from dash.development.base_component import Component
 
 from apps import error_message
-from custom_types import AnyPath
-
-from .paths import OUTPUT_ROOT
+from utilities.custom_types import AnyPath
+from utilities.paths import OUTPUT_ROOT
 
 
 def gather_visualization_paths() -> List[AnyPath]:

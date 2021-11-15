@@ -3,9 +3,7 @@ import pandas as pd
 import tensorflow as tf
 from PIL import Image
 
-from custom_types import AnyPath
-
-# TODO: Create module utilities. Move visualization and prediction there.
+from .custom_types import AnyPath
 
 
 def read_image(path: AnyPath) -> np.array:

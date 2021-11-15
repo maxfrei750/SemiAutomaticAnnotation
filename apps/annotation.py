@@ -10,11 +10,11 @@ from PIL import Image
 from plotly.graph_objects import Figure
 
 from app import app
-from custom_types import AnyPath
-from utilities import read_image
+from utilities.custom_types import AnyPath
+from utilities.data import read_image
+from utilities.paths import ANNOTATED_ROOT, INPUT_ROOT
 
 from . import error_message
-from .paths import ANNOTATED_ROOT, INPUT_ROOT
 
 
 def style_cursor(figure: Figure):

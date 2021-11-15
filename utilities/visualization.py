@@ -9,8 +9,8 @@ from PIL import Image as PILImage
 from PIL import ImageDraw, ImageOps
 from skimage import img_as_ubyte
 
-from custom_types import ColorFloat, ColorInt
-from utilities import sort_box_coordinates
+from .custom_types import ColorFloat, ColorInt
+from .data import sort_box_coordinates
 
 
 def get_viridis_colors(num_colors: int) -> List[ColorFloat]:

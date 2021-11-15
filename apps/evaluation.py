@@ -8,12 +8,14 @@ from dash.development.base_component import Component
 from PIL import Image
 
 from app import app
-from prediction import predict_masks
-from utilities import read_image
-from visualization import visualize_annotation
+from utilities.data import read_image
+from utilities.paths import ANNOTATED_ROOT, OUTPUT_ROOT
+from utilities.prediction import predict_masks
+from utilities.visualization import visualize_annotation
 
 from . import error_message
-from .paths import ANNOTATED_ROOT, OUTPUT_ROOT
+
+# TODO: Reload page after evaluation.
 
 
 def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
