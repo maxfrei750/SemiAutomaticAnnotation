@@ -126,8 +126,6 @@ def get_figure(image_path: Optional[AnyPath]) -> Figure:
         style_annotations(figure)
         style_cursor(figure)
 
-        # TODO: Position mode bar at the center above the graph.
-
         figure.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",

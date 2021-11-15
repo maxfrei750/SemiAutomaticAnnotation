@@ -1,0 +1,4 @@
+#graph-annotation .modebar {
+    left: 50%;
+    transform: translateX(-28px); /* width of a single button*/
+}
