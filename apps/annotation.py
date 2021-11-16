@@ -77,6 +77,7 @@ def get_layout() -> Component:
                 ),
             ),
             dcc.Store(id="image-path", data=str(image_path)),
+            dcc.Location(id="url-annotation", refresh=True),
         ],
         className="d-flex flex-column",
     )
@@ -161,6 +162,7 @@ def get_current_image_path() -> Optional[AnyPath]:
     Output("graph-or-message", "children"),
     Output("image-path", "data"),
     Output("save-next", "className"),
+    Output("url-annotation", "pathname"),
     Input("save-next", "n_clicks"),
     State("graph-annotation", "relayoutData"),
     State("image-path", "data"),
@@ -168,7 +170,7 @@ def get_current_image_path() -> Optional[AnyPath]:
 )
 def save_annotations_and_move_input_image(
     _, relayout_data: Optional[Dict], image_path: str
-) -> Tuple[Union[dcc.Graph, Component], str, str]:
+) -> Tuple[Union[dcc.Graph, Component], str, str, str]:
     """Save annotations as csv-file. Move csv file and image file to the `annotated` folder.
 
     :param _: Mandatory input for the callback. Unused.
@@ -202,10 +204,16 @@ def save_annotations_and_move_input_image(
 
     image_path = get_current_image_path()
 
-    button_class = "invisible" if image_path is None else "visible"
+    if image_path is None:
+        button_class = "invisible"
+        path_name = "/apps/evaluation"
+        content = None
+    else:
+        button_class = "visible"
+        path_name = "/apps/annotation"
+        content = get_graph(image_path)
 
-    # TODO: Load evaluation app, if there are no more images.
-    return get_graph_or_message(image_path), str(image_path), button_class
+    return content, str(image_path), button_class, path_name
 
 
 @app.callback(

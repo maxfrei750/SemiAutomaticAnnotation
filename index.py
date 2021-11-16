@@ -13,7 +13,7 @@ PORT_FRONTEND = int(os.environ["PORT_FRONTEND"])
 
 app.layout = dbc.Container(
     [
-        dbc.Row(dcc.Location(id="url", refresh=True)),
+        dbc.Row(dcc.Location(id="url-index", refresh=True)),
         dbc.Row(id="navigation", className="bg-secondary"),
         dbc.Row(
             id="page-content",
@@ -29,8 +29,8 @@ app.layout = dbc.Container(
 @app.callback(
     Output("page-content", "children"),
     Output("navigation", "children"),
-    Output("url", "pathname"),
-    Input("url", "pathname"),
+    Output("url-index", "pathname"),
+    Input("url-index", "pathname"),
 )
 def display_page(path_name: str) -> Tuple[Component, Component, str]:
     """Display an app, according to the specified path name.

@@ -15,7 +15,6 @@ from utilities.paths import ANNOTATED_ROOT, OUTPUT_ROOT
 from utilities.prediction import predict_masks
 from utilities.visualization import visualize_annotation
 
-# TODO: Reload page after evaluation.
 # TODO: Progressbar? Store the initial number of files and compare with current number.
 
 
@@ -55,6 +54,7 @@ def get_layout() -> Component:
     if csv_paths:
         layout = html.Div(
             [
+                dcc.Location(id="url-evaluation", refresh=True),
                 html.Center(
                     [
                         dbc.Spinner(
@@ -62,7 +62,7 @@ def get_layout() -> Component:
                             # type="default",
                             children=[
                                 dbc.Button("start", id="evaluate", n_clicks=0),
-                                html.Div(id="dummy"),
+                                html.Div(id="dummy-evaluation"),
                             ],
                         ),
                     ],
@@ -86,13 +86,14 @@ def get_layout() -> Component:
 
 
 @app.callback(
-    Output("dummy", "children"),
+    Output("dummy-evaluation", "children"),
+    Output("url-evaluation", "pathname"),
     Input("evaluate", "n_clicks"),
     State("image-paths", "data"),
     State("csv-paths", "data"),
     prevent_initial_call=True,
 )
-def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
+def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]) -> Tuple[None, str]:
     """Evaluate samples.
 
     :param _: Mandatory callback input. Unused.
@@ -123,4 +124,4 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]):
         shutil.move(image_path, OUTPUT_ROOT / image_path.name)
         shutil.move(csv_path, OUTPUT_ROOT / csv_path.name)
 
-        # TODO: Automatically load results.
+    return None, "/apps/results"
