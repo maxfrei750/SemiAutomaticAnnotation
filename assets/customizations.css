@@ -6,3 +6,15 @@
 body, html {
     height: 100%;
 }
+
+#nav-annotation.active{
+    background-color: var(--bs-red);
+}
+
+#nav-evaluation.active{
+    background-color: var(--bs-orange);
+}
+
+#nav-results.active{
+    background-color: var(--bs-green);
+}

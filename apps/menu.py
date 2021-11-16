@@ -16,7 +16,11 @@ def get_layout() -> Component:
 
     for path_name in path_names:
         title = str(Path(path_name).name).capitalize()
-        nav_items.append(dbc.NavItem(dbc.NavLink(title, active="partial", href=path_name)))
+        nav_items.append(
+            dbc.NavItem(
+                dbc.NavLink(title, active="partial", href=path_name, id=f"nav-{title.lower()}"),
+            )
+        )
 
     layout = dbc.Col(dbc.Nav(nav_items, horizontal=True, pills=True, justified=True))
 
