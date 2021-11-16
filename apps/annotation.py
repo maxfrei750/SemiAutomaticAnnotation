@@ -14,7 +14,7 @@ import custom_components
 from app import app
 from utilities.custom_types import AnyPath
 from utilities.data import read_image
-from utilities.paths import ANNOTATED_ROOT, INPUT_ROOT
+from utilities.paths import ANNOTATED_ROOT, INPUT_ROOT, ROOT
 
 
 def style_cursor(figure: Figure):
@@ -114,12 +114,14 @@ def get_graph_or_message(image_path: Optional[AnyPath]) -> Union[dcc.Graph, Comp
     if image_path is None:
         return custom_components.Message(
             [
-                """There are currently no files in the './data/input' folder. Either put some images that you want to 
-                annotate into the folder and """,
+                f"There are currently no files in the './{INPUT_ROOT.relative_to(ROOT.parent)}' folder. Either put "
+                f"some images that you want to annotate into the folder and ",
                 html.A("refresh", href="/apps/annotation"),
-                " this page, or ",
+                " this page, ",
                 html.A("evaluate", href="/apps/evaluation"),
-                " previously annotated images.",
+                " previously annotated images, or inspect previously evaluated ",
+                html.A("results", href="/apps/results"),
+                ".",
             ]
         )
     else:

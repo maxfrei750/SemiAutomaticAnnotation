@@ -11,7 +11,7 @@ from PIL import Image
 import custom_components
 from app import app
 from utilities.data import read_image
-from utilities.paths import ANNOTATED_ROOT, OUTPUT_ROOT
+from utilities.paths import ANNOTATED_ROOT, RESULTS_ROOT, ROOT
 from utilities.prediction import predict_masks
 from utilities.visualization import visualize_annotation
 
@@ -75,7 +75,8 @@ def get_layout() -> Component:
     else:
         layout = custom_components.Message(
             [
-                "There are currently no valid pairs of csv- and image-files in the './data/annotated' folder. Either ",
+                f"There are currently no valid pairs of csv- and image-files in the "
+                f"'./{ANNOTATED_ROOT.relative_to(ROOT.parent)}' folder. Either ",
                 html.A("annotate", href="/apps/annotation"),
                 " some images, or inspect previously evaluated ",
                 html.A("results", href="/apps/results"),
@@ -112,16 +113,16 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]) -> Tuple[N
 
         for mask_id, mask in enumerate(masks):
             mask = mask > 0.5
-            mask_path = OUTPUT_ROOT / f"mask_{image_identifier}_{mask_id}.png"
+            mask_path = RESULTS_ROOT / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
 
-        OUTPUT_ROOT.mkdir(exist_ok=True, parents=True)
+        RESULTS_ROOT.mkdir(exist_ok=True, parents=True)
 
-        visualization_path = OUTPUT_ROOT / f"visualization_{image_identifier}.png"
+        visualization_path = RESULTS_ROOT / f"visualization_{image_identifier}.png"
         visualization = visualize_annotation(image, masks, boxes)
         visualization.save(visualization_path)
 
-        shutil.move(image_path, OUTPUT_ROOT / image_path.name)
-        shutil.move(csv_path, OUTPUT_ROOT / csv_path.name)
+        shutil.move(image_path, RESULTS_ROOT / image_path.name)
+        shutil.move(csv_path, RESULTS_ROOT / csv_path.name)
 
     return None, "/apps/results"

@@ -7,7 +7,7 @@ from dash.development.base_component import Component
 
 import custom_components
 from utilities.custom_types import AnyPath
-from utilities.paths import OUTPUT_ROOT
+from utilities.paths import RESULTS_ROOT, ROOT
 
 
 def gather_visualization_paths() -> List[AnyPath]:
@@ -15,7 +15,7 @@ def gather_visualization_paths() -> List[AnyPath]:
 
     :return: List of paths of visualization images.
     """
-    return sorted(list(OUTPUT_ROOT.glob("visualization_*.*")))
+    return sorted(list(RESULTS_ROOT.glob("visualization_*.*")))
 
 
 def b64_image(image_path: AnyPath) -> str:
@@ -67,7 +67,8 @@ def get_layout() -> Component:
     else:
         layout = custom_components.Message(
             [
-                "There are currently no results in the './data/output' folder. This can be either because you did not ",
+                f"There are currently no results in the './{RESULTS_ROOT.relative_to(ROOT.parent)}' folder. This can "
+                f"be either because you did not ",
                 html.A("annotate", href="/apps/annotation"),
                 " and/or ",
                 html.A("evaluate", href="/apps/evaluation"),
