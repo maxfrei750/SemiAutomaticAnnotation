@@ -221,21 +221,23 @@ def save_annotations_and_move_input_image(
 @app.callback(
     Output("save-next", "disabled"),
     Input("graph-annotation", "relayoutData"),
+    Input("save-next", "disabled"),
 )
-def disable_button(relayout_data: Optional[Dict]) -> bool:
+def disable_button(relayout_data: Optional[Dict], is_button_disabled: bool) -> bool:
     """Check if the `Save & next` button should be activated or not. )
 
     :param relayout_data: Graph annotation data.
+    :param is_button_disabled: Current state of the button.
     :return: True, if the button should be activated, false, if not.
     """
 
-    # TODO: Fix bug, where button is disabled after zooming. Maybe using an interval?
-
-    if relayout_data is None:
+    if relayout_data is None:  # New image has been loaded.
         return True
 
-    if "shapes" not in relayout_data:
-        return True
-
-    if "xaxis.range[0]" not in relayout_data:
-        return False
+    if "shapes" in relayout_data:  # There might be annotations.
+        if relayout_data["shapes"]:  # There are annotations.
+            return False
+        else:  # There were annotations but they have been deleted by the user.
+            return True
+    else:  # There are no annotations.
+        return is_button_disabled
