@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import dash_bootstrap_components as dbc
 import pandas as pd
@@ -54,29 +54,43 @@ def get_layout() -> Component:
 
     :return: Layout of the annotation app.
     """
-
-    image_path = get_current_image_path()
+    num_images_initial = len(get_image_paths())
+    current_image_path = get_current_image_path()
 
     layout = dbc.Col(
         [
             dbc.Row(
-                get_graph_or_message(image_path),
+                get_graph_or_message(current_image_path),
                 id="graph-or-message",
                 className="flex-fill",
             ),
             dbc.Row(
                 dbc.Col(
-                    dbc.Button(
-                        "Save & next",
-                        id="save-next",
-                        n_clicks=0,
-                        disabled=True,
-                        className="invisible" if image_path is None else "visible",
-                    ),
+                    [
+                        html.Div(
+                            [
+                                dbc.Button(
+                                    "Save & next",
+                                    id="save-next",
+                                    n_clicks=0,
+                                    disabled=True,
+                                ),
+                                dbc.Progress(
+                                    id="progress-annotation",
+                                    max=num_images_initial,
+                                    style={"height": "1vh", "margin-top": "1vh"},
+                                ),
+                            ],
+                            id="annotation-button-and-progress",
+                            className="invisible" if current_image_path is None else "visible",
+                        )
+                    ],
                     className="text-center",
+                    width={"size": 2, "offset": 5},
                 ),
             ),
-            dcc.Store(id="image-path", data=str(image_path)),
+            dcc.Store(id="image-path", data=str(current_image_path)),
+            dcc.Store(id="num-images-initial", data=num_images_initial),
             dcc.Location(id="url-annotation", refresh=True),
         ],
         className="d-flex flex-column",
@@ -155,30 +169,41 @@ def get_current_image_path() -> Optional[AnyPath]:
 
     :return: Path of the first image in the `input` folder.
     """
-    image_paths = sorted(list(INPUT_ROOT.glob("?*.*")))
+    image_paths = get_image_paths()
     if image_paths:
         return image_paths[0]
+
+
+def get_image_paths() -> List[AnyPath]:
+    """Get list of the paths of the images in the `input` folder.
+
+    :return: List of paths of the images in the `input` folder.
+    """
+    image_paths = sorted(list(INPUT_ROOT.glob("?*.*")))
+    return image_paths
 
 
 @app.callback(
     Output("graph-or-message", "children"),
     Output("image-path", "data"),
-    Output("save-next", "className"),
+    Output("annotation-button-and-progress", "className"),
     Output("url-annotation", "pathname"),
+    Output("progress-annotation", "value"),
     Input("save-next", "n_clicks"),
     State("graph-annotation", "relayoutData"),
     State("image-path", "data"),
+    State("num-images-initial", "data"),
     prevent_initial_call=True,
 )
 def save_annotations_and_move_input_image(
-    _, relayout_data: Optional[Dict], image_path: str
-) -> Tuple[Union[dcc.Graph, Component], str, str, str]:
+    _, relayout_data: Optional[Dict], image_path: str, num_images_initial: int
+) -> Tuple[Union[dcc.Graph, Component], str, str, str, int]:
     """Save annotations as csv-file. Move csv file and image file to the `annotated` folder.
 
     :param _: Mandatory input for the callback. Unused.
     :param relayout_data: Dictionary, holding information about the annotations.
     :param image_path: Path of the input image.
-    :return: Graph of for the annotation of the next image or message saying that there are no more images.
+    :param num_images_initial: Number of images that can be annotated.
     """
 
     shapes = relayout_data.get("shapes")
@@ -207,15 +232,18 @@ def save_annotations_and_move_input_image(
     image_path = get_current_image_path()
 
     if image_path is None:
-        button_class = "invisible"
+        button_and_progress_class = "invisible"
         path_name = "/apps/evaluation"
         content = None
     else:
-        button_class = "visible"
+        button_and_progress_class = "visible"
         path_name = "/apps/annotation"
         content = get_graph(image_path)
 
-    return content, str(image_path), button_class, path_name
+    num_images_left = len(get_image_paths())
+    sample_index = num_images_initial - num_images_left
+
+    return content, str(image_path), button_and_progress_class, path_name, sample_index
 
 
 @app.callback(

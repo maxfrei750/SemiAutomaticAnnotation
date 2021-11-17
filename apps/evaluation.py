@@ -70,7 +70,7 @@ def get_layout() -> Component:
                 ),
                 dbc.Col(
                     dbc.Progress(
-                        id="progress",
+                        id="progress-evaluation",
                         max=num_samples,
                     ),
                     width={"size": 6, "offset": 3},
@@ -96,7 +96,7 @@ def get_layout() -> Component:
 
 
 @app.callback(
-    Output("progress", "value"),
+    Output("progress-evaluation", "value"),
     Input("interval-progress", "n_intervals"),
     State("image-paths", "data"),
     prevent_initial_call=True,
