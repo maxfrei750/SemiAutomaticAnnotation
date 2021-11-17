@@ -8,7 +8,7 @@ body, html {
 }
 
 #nav-annotation.active{
-    background-color: var(--bs-red);
+    background-color: var(--bs-purple);
 }
 
 #nav-evaluation.active{
