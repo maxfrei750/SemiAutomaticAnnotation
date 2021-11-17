@@ -43,13 +43,8 @@ RUN python -m pip install .
 
 ENV TF_CPP_MIN_LOG_LEVEL 3
 
-# Download model.
-WORKDIR /home/tensorflow/models/research/object_detection/test_data/
-ADD --chown=tensorflow http://download.tensorflow.org/models/object_detection/tf2/20210329/deepmac_1024x1024_coco17.tar.gz .
-RUN tar -xzf deepmac_1024x1024_coco17.tar.gz && rm deepmac_1024x1024_coco17.tar.gz
-
 # Install additional dependencies
-RUN python -m pip install -U scikit-image dash dash_bootstrap_components
+RUN python -m pip install scikit-image dash dash_bootstrap_components
 
 # Set initial workdir
-WORKDIR /home/tensorflow/
+WORKDIR /home/tensorflow/app

@@ -17,7 +17,8 @@ services:
       context: .
       dockerfile: client.Dockerfile
     volumes:
-      - ./data:/home/tensorflow/data
+      - .:/home/tensorflow/app
+    command: python index.py
     environment:
       - MODEL_API_URL=http://model:${PORT_BACKEND}/v1/models/deepmac:predict
       - PORT_FRONTEND=${PORT_FRONTEND}
