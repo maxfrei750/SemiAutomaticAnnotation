@@ -15,8 +15,6 @@ from utilities.paths import ANNOTATED_ROOT, RESULTS_ROOT, ROOT
 from utilities.prediction import predict_masks
 from utilities.visualization import visualize_annotation
 
-# TODO: Progressbar? Store the initial number of files and compare with current number.
-
 
 def gather_image_and_csv_paths() -> Tuple[List[str], List[str]]:
     """Gather pairs of images and csv annotation files.
@@ -51,6 +49,8 @@ def get_layout() -> Component:
     """
     image_paths, csv_paths = gather_image_and_csv_paths()
 
+    num_samples = len(image_paths)
+
     if csv_paths:
         layout = html.Div(
             [
@@ -59,15 +59,24 @@ def get_layout() -> Component:
                     [
                         dbc.Spinner(
                             id="loading",
-                            # type="default",
+                            size="lg",
                             children=[
-                                dbc.Button("start", id="evaluate", n_clicks=0),
+                                dbc.Button("Start", id="evaluate", n_clicks=0, size="lg"),
                                 html.Div(id="dummy-evaluation"),
                             ],
                         ),
                     ],
                     style={"margin-top": "10%"},
                 ),
+                dbc.Col(
+                    dbc.Progress(
+                        id="progress",
+                        max=num_samples,
+                    ),
+                    width={"size": 6, "offset": 3},
+                    style={"margin-top": "2%"},
+                ),
+                dcc.Interval(id="interval-progress", interval=1000),
                 dcc.Store(id="image-paths", data=image_paths),
                 dcc.Store(id="csv-paths", data=csv_paths),
             ],
@@ -84,6 +93,22 @@ def get_layout() -> Component:
             ]
         )
     return layout
+
+
+@app.callback(
+    Output("progress", "value"),
+    Input("interval-progress", "n_intervals"),
+    State("image-paths", "data"),
+    prevent_initial_call=True,
+)
+def update_progress(_, image_paths: List[str]) -> int:
+
+    num_samples_total = len(image_paths)
+    num_samples_left = len(gather_image_and_csv_paths()[0])
+
+    sample_index = num_samples_total - num_samples_left
+
+    return sample_index
 
 
 @app.callback(
