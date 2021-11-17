@@ -111,12 +111,13 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]) -> Tuple[N
         boxes = pd.read_csv(csv_path)
         masks = predict_masks(image, boxes)
 
+        mask_root = RESULTS_ROOT / "masks"
+        mask_root.mkdir(exist_ok=True, parents=True)
+
         for mask_id, mask in enumerate(masks):
             mask = mask > 0.5
-            mask_path = RESULTS_ROOT / f"mask_{image_identifier}_{mask_id}.png"
+            mask_path = mask_root / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
-
-        RESULTS_ROOT.mkdir(exist_ok=True, parents=True)
 
         visualization_path = RESULTS_ROOT / f"visualization_{image_identifier}.png"
         visualization = visualize_annotation(image, masks, boxes)
