@@ -41,8 +41,6 @@ def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
 
     inference_url = os.environ["MODEL_API_URL"]
 
-    # TODO: Handle more than 100 instances per image, by splitting boxes into sets of length 100.
-
     data = json.dumps(
         {
             "signature_name": "serving_default",
