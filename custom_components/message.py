@@ -13,6 +13,6 @@ class Message(dbc.Col):
 
         super().__init__(
             dbc.Alert(children, color=color),
-            style={"margin-top": "2%"},
+            style={"margin-top": "10%"},
             width={"size": 6, "offset": 3},
         )
