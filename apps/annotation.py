@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
+import dash
 import dash_bootstrap_components as dbc
 import pandas as pd
 import plotly.express as px
@@ -91,6 +92,7 @@ def get_layout() -> Component:
             ),
             dcc.Store(id="image-path", data=str(current_image_path)),
             dcc.Store(id="num-images-initial", data=num_images_initial),
+            dcc.Store(id="store-annotation", data=[]),
             dcc.Location(id="url-annotation", refresh=True),
         ],
         className="d-flex flex-column",
@@ -191,28 +193,23 @@ def get_image_paths() -> List[AnyPath]:
     Output("url-annotation", "pathname"),
     Output("progress-annotation", "value"),
     Input("save-next", "n_clicks"),
-    State("graph-annotation", "relayoutData"),
+    State("store-annotation", "data"),
     State("image-path", "data"),
     State("num-images-initial", "data"),
     prevent_initial_call=True,
 )
 def save_annotations_and_move_input_image(
-    _, relayout_data: Optional[Dict], image_path: str, num_images_initial: int
+    _, annotations: List[Dict], image_path: str, num_images_initial: int
 ) -> Tuple[Union[dcc.Graph, Component], str, str, str, int]:
     """Save annotations as csv-file. Move csv file and image file to the `annotated` folder.
 
     :param _: Mandatory input for the callback. Unused.
-    :param relayout_data: Dictionary, holding information about the annotations.
+    :param annotations: List of dictionaries with keys ["x0", "y0", "x1", "y1"].
     :param image_path: Path of the input image.
     :param num_images_initial: Number of images that can be annotated.
     """
 
-    shapes = relayout_data.get("shapes")
-
-    wanted_keys = ["x0", "y0", "x1", "y1"]
-    annotations = pd.DataFrame(
-        [dict((k, shape[k]) for k in wanted_keys if k in shape) for shape in shapes]
-    )
+    annotations = pd.DataFrame(annotations)
 
     image_path = Path(image_path)
 
@@ -270,3 +267,50 @@ def disable_button(relayout_data: Optional[Dict], is_button_disabled: bool) -> b
             return True
     else:  # There are no annotations.
         return is_button_disabled
+
+
+@app.callback(
+    Output("store-annotation", "data"),
+    Input("graph-annotation", "relayoutData"),
+    State("store-annotation", "data"),
+)
+def update_annotation_store(
+    relayout_data: Optional[Dict], current_store_state: List[Dict]
+) -> List[Dict]:
+    """Update the annotation data store `store-annotation`, if necessary. This workaround is necessary, to always have
+    access to a full set of annotations, independently from the `relayoutData` property of the `graph-annotation`
+    element, which can have all sorts of values, depending on the user interaction.
+
+    :param relayout_data: Graph annotation data.
+    :param current_store_state: Current state of the data store.
+    :return: Updated state of the data store.
+    """
+
+    if "shapes" in relayout_data:  # There exist annotations or all annotations have been deleted.
+        shapes = relayout_data["shapes"]
+        wanted_keys = ["x0", "y0", "x1", "y1"]
+        annotations = [dict((k, shape[k]) for k in wanted_keys if k in shape) for shape in shapes]
+
+        return annotations
+    elif any(
+        ["shapes" in key for key in relayout_data]
+    ):  # An annotation is currently being updated.
+
+        # Get the index of the annotation that is being manipulated.
+        updated_index = None  # Prevent that `updated_index` is ever undefined.
+        for key in relayout_data:
+            if "shapes" in key:
+                # Keys have the format `shapes[0].x0`.
+                updated_index = int(key[7:][:-4])
+
+        x0 = [relayout_data[key] for key in relayout_data if "x0" in key][0]
+        x1 = [relayout_data[key] for key in relayout_data if "x1" in key][0]
+        y0 = [relayout_data[key] for key in relayout_data if "y0" in key][0]
+        y1 = [relayout_data[key] for key in relayout_data if "y1" in key][0]
+
+        annotations = current_store_state.copy()
+        annotations[updated_index] = dict(x0=x0, x1=x1, y0=y0, y1=y1)
+
+        return annotations
+    else:  # Edge cases (e.g. freshly loaded page or zooming).
+        return dash.no_update
