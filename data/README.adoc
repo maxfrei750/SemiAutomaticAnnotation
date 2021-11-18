@@ -6,5 +6,5 @@ This is where you need to place the images that you are going to annotate.
 == `./annotated`
 After you have annotated an image, it is moved to this folder along with the associated `annotation_*.csv`-file . Also, the image is converted to a lossless `*.png`-file and renamed to have the prefix `image_`.
 
-== `./output`
-After an image with its annotations has been evaluated, both the `image_*.png`- and the `annotation_*.csv`-file are moved to this folder. The `mask_*.png`-files that results from the evaluation are also placed in this folder, along with a `visualization_*.png`-file of the detected objects.
+== `./results`
+After an image with its annotations has been evaluated, both the `image_*.png`- and the `annotation_*.csv`-file are moved to this folder. The `mask_*.png`-files that results from the evaluation are also placed in this folder (in a sub-folder `masks`), along with a `visualization_*.png`-file of the detected objects.
