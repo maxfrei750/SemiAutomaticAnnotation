@@ -82,3 +82,5 @@ build
 
 # Custom
 /dev
+/assets/images/image_*.png
+/assets/images/visualization_*.png

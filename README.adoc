@@ -4,14 +4,7 @@
 This application allows the pixel-perfect annotation of objects, by just labeling their bounding box. It can therefore
 yield significant speed-ups of the annotation process, especially for irregularly shaped objects.
 
-// TODO: Add example image.
-
-== Acknowledgement
-This application is based on the following publication:
-
-https://arxiv.org/abs/2104.00613[Birodkar et al. -- The surprising impact of mask-head architecture on novel class segmentation]
-
-The authors of this application and the aforementioned publication are not associated in any way.
+image::assets/images/demo.gif[Demo]
 
 == Installation
 . Install https://github.com/git-guides/install-git[Git].
@@ -37,6 +30,13 @@ The authors of this application and the aforementioned publication are not assoc
 . Open a command line in the repository folder.
 . Pull the latest version: `git pull`
 . Rebuild the Docker images: `docker-compose build`
+
+== Acknowledgement
+This application is based on the following publication:
+
+https://arxiv.org/abs/2104.00613[Birodkar et al. -- The surprising impact of mask-head architecture on novel class segmentation]
+
+The authors of this application and the aforementioned publication are not associated in any way.
 
 == Licenses
 
