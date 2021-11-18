@@ -65,6 +65,7 @@ def get_layout() -> Component:
         )
 
     else:
+        # TODO: Use dcc.Markdown for paths.
         layout = custom_components.Message(
             [
                 f"There are currently no results in the './{RESULTS_ROOT.relative_to(ROOT.parent)}' folder. This can "

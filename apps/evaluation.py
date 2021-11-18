@@ -82,6 +82,7 @@ def get_layout() -> Component:
             ],
         )
     else:
+        # TODO: Use dcc.Markdown for paths.
         layout = custom_components.Message(
             [
                 f"There are currently no valid pairs of csv- and image-files in the "
