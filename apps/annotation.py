@@ -128,18 +128,13 @@ def get_graph_or_message(image_path: Optional[AnyPath]) -> Union[dcc.Graph, Comp
     :return: Either a plotly graph with an image or a html component showing an error message.
     """
     if image_path is None:
-        # TODO: Use dcc.Markdown for paths.
         return custom_components.Message(
-            [
-                f"There are currently no files in the './{INPUT_ROOT.relative_to(ROOT.parent)}' folder. Either put "
-                f"some images that you want to annotate into the folder and ",
-                html.A("refresh", href="/apps/annotation"),
-                " this page, ",
-                html.A("evaluate", href="/apps/evaluation"),
-                " previously annotated images, or inspect previously evaluated ",
-                html.A("results", href="/apps/results"),
-                ".",
-            ]
+            dcc.Markdown(
+                f"There are currently no files in the `./{INPUT_ROOT.relative_to(ROOT.parent)}` folder. Either put "
+                f"some images that you want to annotate into the folder and **[refresh](/apps/annotation)** this page, "
+                f"**[evaluate](/apps/evaluation)** previously annotated images, or inspect previously evaluated "
+                f"**[results](/apps/results)**."
+            )
         )
     else:
         return get_graph(image_path)

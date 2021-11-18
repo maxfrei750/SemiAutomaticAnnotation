@@ -82,16 +82,12 @@ def get_layout() -> Component:
             ],
         )
     else:
-        # TODO: Use dcc.Markdown for paths.
         layout = custom_components.Message(
-            [
+            dcc.Markdown(
                 f"There are currently no valid pairs of csv- and image-files in the "
-                f"'./{ANNOTATED_ROOT.relative_to(ROOT.parent)}' folder. Either ",
-                html.A("annotate", href="/apps/annotation"),
-                " some images, or inspect previously evaluated ",
-                html.A("results", href="/apps/results"),
-                ".",
-            ]
+                f"`./{ANNOTATED_ROOT.relative_to(ROOT.parent)}` folder. Either **[annotate](/apps/annotation)** some "
+                f"images or inspect previously evaluated **[results](/apps/results)**."
+            )
         )
     return layout
 

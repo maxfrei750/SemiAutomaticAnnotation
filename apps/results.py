@@ -2,7 +2,7 @@ import base64
 from typing import List
 
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import dcc, html
 from dash.development.base_component import Component
 
 import custom_components
@@ -65,16 +65,11 @@ def get_layout() -> Component:
         )
 
     else:
-        # TODO: Use dcc.Markdown for paths.
         layout = custom_components.Message(
-            [
-                f"There are currently no results in the './{RESULTS_ROOT.relative_to(ROOT.parent)}' folder. This can "
-                f"be either because you did not ",
-                html.A("annotate", href="/apps/annotation"),
-                " and/or ",
-                html.A("evaluate", href="/apps/evaluation"),
-                """ any images yet.""",
-            ]
+            dcc.Markdown(
+                f"There are currently no results in the `./{RESULTS_ROOT.relative_to(ROOT.parent)}` folder. Please "
+                f"**[annotate](/apps/annotation)** and/or **[evaluate](/apps/evaluation)** some images."
+            )
         )
 
     return layout
