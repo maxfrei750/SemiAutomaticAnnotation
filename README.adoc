@@ -1,7 +1,12 @@
 :toc:
+
 = SemiAutomaticAnnotation
 
-This application allows the pixel-perfect annotation of objects, by just labeling their bounding box. It can therefore
+image:https://img.shields.io/github/license/maxfrei750/SemiAutomaticAnnotation.svg[License: MIT,link="https://github.com/maxfrei750/SemiAutomaticAnnotation/blob/main/LICENSE"]
+image:https://img.shields.io/github/license/tensorflow/tensorflow.svg[License: Apache-2.0, link="https://github.com/tensorflow/tensorflow/blob/master/LICENSE"]
+image:https://img.shields.io/badge/platform-docker-blue[Platform: docker]
+
+This browser-based application allows the pixel-perfect annotation of objects, by just labeling their bounding box. It can therefore
 yield significant speed-ups of the annotation process, especially for irregularly shaped objects.
 
 image::assets/images/demo.gif[Demo]
