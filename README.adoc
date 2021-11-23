@@ -25,7 +25,7 @@ image::assets/images/demo.gif[Demo]
 . Open a command line.
 . Change into the repository folder: `cd SemiAutomaticAnnotation`
 . Start the application (might take a few seconds): `docker-compose up`
-. Visit the web application: http://0.0.0.0:8502
+. Visit the web application: http://localhost:8502
 . Annotate your images.
 . Evaluate your images.
 . Inspect your results.
