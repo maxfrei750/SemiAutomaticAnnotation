@@ -87,11 +87,11 @@ def visualize_annotation(
 
     colors_float = get_random_viridis_colors(num_instances)
 
-    for (
+    for instance_idx, (
         mask,
         box,
         color_float,
-    ) in zip(masks, boxes.itertuples(index=False), colors_float):
+    ) in enumerate(zip(masks, boxes.itertuples(index=False), colors_float)):
 
         color_int = _color_float_to_int(color_float)
 
@@ -112,6 +112,13 @@ def visualize_annotation(
                 outline=color_int,
                 width=line_width,
             )
+
+        ImageDraw.Draw(result).text(
+            ((box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2),
+            text=str(instance_idx + 1),
+            align="center",
+            anchor="mm",
+        )
 
     return result
 
