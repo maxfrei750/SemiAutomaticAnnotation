@@ -216,7 +216,7 @@ def save_annotations_and_move_input_image(
     ANNOTATED_ROOT.mkdir(exist_ok=True, parents=True)
 
     csv_path = ANNOTATED_ROOT / f"annotation_{image_id}.csv"
-    annotations.to_csv(csv_path, index=False)
+    annotations.to_csv(csv_path, index=True, index_label="index")
 
     output_image_path = ANNOTATED_ROOT / f"image_{image_id}.png"
     Image.open(image_path).save(output_image_path)
