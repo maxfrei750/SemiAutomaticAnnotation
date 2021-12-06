@@ -115,7 +115,7 @@ def visualize_annotation(
 
         ImageDraw.Draw(result).text(
             ((box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2),
-            text=str(instance_idx + 1),
+            text=str(instance_idx),
             align="center",
             anchor="mm",
         )
