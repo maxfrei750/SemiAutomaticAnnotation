@@ -17,6 +17,12 @@ from utilities.custom_types import AnyPath
 from utilities.data import read_image
 from utilities.paths import ANNOTATED_ROOT, INPUT_ROOT, ROOT
 
+ANNOTATION_STYLE = {
+    "fillcolor": "magenta",
+    "opacity": 0.4,
+    "line": {"color": "red", "width": 3},
+}
+
 
 def style_cursor(figure: Figure):
     """Style the cursor of a figure to allow an easy annotation.
@@ -42,12 +48,19 @@ def style_annotations(figure: Figure):
     """
     figure.update_layout(
         dragmode="drawrect",
-        newshape={
-            "fillcolor": "magenta",
-            "opacity": 0.4,
-            "line": {"color": "red", "width": 3},
-        },
+        newshape=ANNOTATION_STYLE,
     )
+
+
+def get_associated_csv_path(image_path: AnyPath):
+    """Construct the path of a potential csv file that might accompany an image.
+
+    :param image_path: path of the input image
+    :return: Path of a potential csv file associated with the input image (may or may not exist).
+    """
+    image_path = Path(image_path)
+    image_identifier = get_image_identifier(image_path)
+    return image_path.parent / f"annotation_{image_identifier}.csv"
 
 
 def get_layout() -> Component:
@@ -57,6 +70,12 @@ def get_layout() -> Component:
     """
     num_images_initial = len(get_image_paths())
     current_image_path = get_current_image_path()
+    associated_annotations = load_associated_annotations(current_image_path)
+
+    if associated_annotations is not None:
+        annotation_store_content = [dict(row) for _, row in associated_annotations.iterrows()]
+    else:
+        annotation_store_content = []
 
     layout = dbc.Col(
         [
@@ -92,7 +111,7 @@ def get_layout() -> Component:
             ),
             dcc.Store(id="image-path", data=str(current_image_path)),
             dcc.Store(id="num-images-initial", data=num_images_initial),
-            dcc.Store(id="store-annotation", data=[]),
+            dcc.Store(id="store-annotation", data=annotation_store_content),
             dcc.Location(id="url-annotation", refresh=True),
         ],
         className="d-flex flex-column",
@@ -131,9 +150,9 @@ def get_graph_or_message(image_path: Optional[AnyPath]) -> Union[dcc.Graph, Comp
         return custom_components.Message(
             dcc.Markdown(
                 f"There are currently no files in the `./{INPUT_ROOT.relative_to(ROOT.parent)}` folder. Either put "
-                f"some images that you want to annotate into the folder and **[refresh](/apps/annotation)** this page, "
-                f"**[evaluate](/apps/evaluation)** previously annotated images, or inspect previously evaluated "
-                f"**[results](/apps/results)**."
+                f"some images (and optionally associated `annotation_*.csv` files) that you want to annotate into the "
+                f"folder and **[refresh](/apps/annotation)** this page, **[evaluate](/apps/evaluation)** previously "
+                f"annotated images, or inspect previously evaluated **[results](/apps/results)**."
             )
         )
     else:
@@ -147,6 +166,8 @@ def get_figure(image_path: Optional[AnyPath]) -> Figure:
     :return: Plotly figure that is styled for annotation, showing an image, or None, if there is no image.
     """
     if image_path is not None:
+        image_path = Path(image_path)
+
         image = read_image(image_path)
         figure = px.imshow(image)
         style_annotations(figure)
@@ -159,7 +180,36 @@ def get_figure(image_path: Optional[AnyPath]) -> Figure:
             margin=dict(l=20, r=20, t=40, b=20),
         )
 
+        boxes = load_associated_annotations(image_path)
+
+        if boxes is not None:
+            for _, box in boxes.iterrows():
+                figure.add_shape(
+                    editable=True,
+                    type="rect",
+                    x0=box["x0"],
+                    y0=box["y0"],
+                    x1=box["x1"],
+                    y1=box["y1"],
+                    **ANNOTATION_STYLE,
+                )
+
         return figure
+
+
+def load_associated_annotations(image_path) -> Optional[pd.Series]:
+    """Load annotations from an annotation_*.csv file that might exist for an image.
+
+    :param image_path: path to an image
+    :return: either series of boxes, if the csv file exists, else None.
+    """
+    if image_path is None:
+        return None
+
+    csv_path = get_associated_csv_path(image_path)
+
+    if csv_path.exists():
+        return pd.read_csv(csv_path, usecols=["x0", "y0", "x1", "y1"])
 
 
 def get_current_image_path() -> Optional[AnyPath]:
@@ -177,8 +227,24 @@ def get_image_paths() -> List[AnyPath]:
 
     :return: List of paths of the images in the `input` folder.
     """
-    image_paths = sorted(list(INPUT_ROOT.glob("?*.*")))
+    image_paths = list(INPUT_ROOT.glob("?*.*"))
+    image_paths = [path for path in image_paths if not path.suffix.lower() == ".csv"]
+
+    image_paths = sorted(image_paths)
     return image_paths
+
+
+def get_image_identifier(image_path: AnyPath) -> str:
+    """Retrieve image id based on image path.
+
+    :param image_path: Path of the input image.
+    :return: image id
+    """
+    image_path = Path(image_path)
+    image_id = image_path.stem
+    if image_id.startswith("image_"):  # Catch if the image file name already has the suffix.
+        image_id = image_id[6:]
+    return image_id
 
 
 @app.callback(
@@ -208,17 +274,21 @@ def save_annotations_and_move_input_image(
 
     image_path = Path(image_path)
 
-    image_id = image_path.stem
-
-    if image_id.startswith("image_"):  # Catch if the image file name already has the suffix.
-        image_id = image_id[6:]
+    image_identifier = get_image_identifier(image_path)
 
     ANNOTATED_ROOT.mkdir(exist_ok=True, parents=True)
 
-    csv_path = ANNOTATED_ROOT / f"annotation_{image_id}.csv"
-    annotations.to_csv(csv_path, index=True, index_label="index")
+    csv_file_name = f"annotation_{image_identifier}.csv"
 
-    output_image_path = ANNOTATED_ROOT / f"image_{image_id}.png"
+    csv_path_in = INPUT_ROOT / csv_file_name
+
+    if csv_path_in.exists():
+        csv_path_in.unlink()
+
+    csv_path_out = ANNOTATED_ROOT / csv_file_name
+    annotations.to_csv(csv_path_out, index=True, index_label="index")
+
+    output_image_path = ANNOTATED_ROOT / f"image_{image_identifier}.png"
     Image.open(image_path).save(output_image_path)
     os.remove(image_path)
 
@@ -241,27 +311,26 @@ def save_annotations_and_move_input_image(
 
 @app.callback(
     Output("save-next", "disabled"),
+    Input("graph-annotation", "figure"),
     Input("graph-annotation", "relayoutData"),
-    Input("save-next", "disabled"),
 )
-def disable_button(relayout_data: Optional[Dict], is_button_disabled: bool) -> bool:
-    """Check if the `Save & next` button should be activated or not. )
+def disable_button(figure: Optional[Dict], _) -> bool:
+    """Check if the `Save & next` button should be activated or not.
 
-    :param relayout_data: Graph annotation data.
-    :param is_button_disabled: Current state of the button.
-    :return: True, if the button should be activated, false, if not.
+    :param figure: annotation graph figure
+    :param _: placeholder, only used to trigger the callback
+    :return: True, if the button should be disabled, false, if not.
     """
 
-    if relayout_data is None:  # New image has been loaded.
+    if "shapes" in figure["layout"]:
+        shapes = figure["layout"]["shapes"]
+    else:
         return True
 
-    if "shapes" in relayout_data:  # There might be annotations.
-        if relayout_data["shapes"]:  # There are annotations.
-            return False
-        else:  # There were annotations but they have been deleted by the user.
-            return True
-    else:  # There are no annotations.
-        return is_button_disabled
+    if not shapes:
+        return True
+
+    return False
 
 
 @app.callback(
