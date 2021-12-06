@@ -43,7 +43,7 @@ def style_annotations(figure: Figure):
     figure.update_layout(
         dragmode="drawrect",
         newshape={
-            "fillcolor": None,
+            "fillcolor": "magenta",
             "opacity": 0.4,
             "line": {"color": "red", "width": 3},
         },
