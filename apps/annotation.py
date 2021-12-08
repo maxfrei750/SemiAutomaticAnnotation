@@ -285,6 +285,8 @@ def save_annotations_and_move_input_image(
     if csv_path_in.exists():
         csv_path_in.unlink()
 
+    # TODO: Sort annotations top-left-bottom-right
+    # TODO: Start index at 1.
     csv_path_out = ANNOTATED_ROOT / csv_file_name
     annotations.to_csv(csv_path_out, index=True, index_label="index")
 

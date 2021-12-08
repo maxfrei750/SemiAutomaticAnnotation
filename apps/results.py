@@ -62,6 +62,7 @@ def get_layout() -> Component:
             ),
             className="d-flex flex-column",
             style={"margin-top": "2%"},
+            # TODO: Add re-annotate button.
         )
 
     else:

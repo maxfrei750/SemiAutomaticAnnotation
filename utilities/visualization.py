@@ -113,6 +113,8 @@ def visualize_annotation(
                 width=line_width,
             )
 
+        # TODO: Increase font size.
+        # TODO: Start index at 1.
         ImageDraw.Draw(result).text(
             ((box.x0 + box.x1) / 2, (box.y0 + box.y1) / 2),
             text=str(instance_idx),
