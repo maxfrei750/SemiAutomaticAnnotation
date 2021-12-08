@@ -18,7 +18,7 @@ from utilities.data import read_image
 from utilities.paths import ANNOTATED_ROOT, INPUT_ROOT, ROOT
 
 ANNOTATION_STYLE = {
-    "fillcolor": "magenta",
+    "fillcolor": None,
     "opacity": 0.4,
     "line": {"color": "red", "width": 3},
 }
