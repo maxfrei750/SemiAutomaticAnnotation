@@ -308,7 +308,13 @@ def save_annotations_and_move_input_image(
     num_images_left = len(get_image_paths())
     sample_index = num_images_initial - num_images_left
 
-    return content, str(image_path), button_and_progress_class, path_name, sample_index
+    return (
+        content,
+        str(image_path),
+        button_and_progress_class,
+        path_name,
+        sample_index,
+    )
 
 
 @app.callback(
@@ -339,9 +345,11 @@ def disable_button(figure: Optional[Dict], _) -> bool:
     Output("store-annotation", "data"),
     Input("graph-annotation", "relayoutData"),
     State("store-annotation", "data"),
+    State("image-path", "data"),
+    prevent_initial_call=True,
 )
 def update_annotation_store(
-    relayout_data: Optional[Dict], current_store_state: List[Dict]
+    relayout_data: Optional[Dict], current_store_state: List[Dict], image_path: str
 ) -> List[Dict]:
     """Update the annotation data store `store-annotation`, if necessary. This workaround is necessary, to always have
     access to a full set of annotations, independently from the `relayoutData` property of the `graph-annotation`
@@ -349,10 +357,20 @@ def update_annotation_store(
 
     :param relayout_data: Graph annotation data.
     :param current_store_state: Current state of the data store.
+    :param image_path: Path of the input image.
     :return: Updated state of the data store.
     """
 
-    if "shapes" in relayout_data:  # There exist annotations or all annotations have been deleted.
+    if relayout_data is None:  # save-next button pressed
+        associated_annotations = load_associated_annotations(image_path)
+
+        if associated_annotations is not None:
+            annotation_store_content = [dict(row) for _, row in associated_annotations.iterrows()]
+        else:
+            annotation_store_content = []
+
+        return annotation_store_content
+    elif "shapes" in relayout_data:  # There exist annotations or all annotations have been deleted.
         shapes = relayout_data["shapes"]
         wanted_keys = ["x0", "y0", "x1", "y1"]
         annotations = [dict((k, shape[k]) for k in wanted_keys if k in shape) for shape in shapes]
@@ -378,5 +396,6 @@ def update_annotation_store(
         annotations[updated_index] = dict(x0=x0, x1=x1, y0=y0, y1=y1)
 
         return annotations
-    else:  # Edge cases (e.g. freshly loaded page or zooming).
+
+    else:  # e.g. freshly loaded page/zooming
         return dash.no_update
