@@ -50,3 +50,18 @@ https://github.com/tensorflow/tensorflow/blob/master/LICENSE
 
 === Application
 https://github.com/maxfrei750/SemiAutomaticAnnotation/blob/master/LICENSE
+
+== Citation
+If you use this repository for a publication, then please cite it using the following bibtex-entry:
+```
+@article{Gorynski.2023,
+	title = {Machine Learning Based Quantitative Characterization of Microstructures},
+	author = {Gorynski, Claudia and Frei, Max and Kruis, Frank Einar and Winterer, Markus},
+	year = {2023},
+	journal = {Acta Materialia},
+	volume = {256},
+	pages = {119106},
+	issn = {1359-6454},
+	doi = {10.1016/j.actamat.2023.119106},
+}
+```
