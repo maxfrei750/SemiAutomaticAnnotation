@@ -18,13 +18,13 @@ image::assets/images/demo.gif[Demo]
 . Open a command line.
 . Clone this repository: `git clone https://github.com/maxfrei750/SemiAutomaticAnnotation.git`
 . Change into the repository folder: `cd SemiAutomaticAnnotation`
-. Build the required Docker images (this might take some time): `docker-compose build`
+. Build the required Docker images (this might take some time): `docker compose build`
 
 == Usage
 . Place your input images in the `./SemiAutomaticAnnotation/data/input` folder.
 . Open a command line.
 . Change into the repository folder: `cd SemiAutomaticAnnotation`
-. Start the application (might take a few seconds): `docker-compose up`
+. Start the application (might take a few seconds): `docker compose up`
 . Visit the web application: http://localhost:8502
 . Annotate your images.
 . Evaluate your images.
@@ -34,7 +34,7 @@ image::assets/images/demo.gif[Demo]
 == Update
 . Open a command line in the repository folder.
 . Pull the latest version: `git pull`
-. Rebuild the Docker images: `docker-compose build`
+. Rebuild the Docker images: `docker compose build`
 
 == Acknowledgement
 This application is based on the following publication:
