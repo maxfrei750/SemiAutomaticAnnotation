@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 import requests
 import tensorflow as tf
-from object_detection.utils import ops
 
-from utilities.data import sort_box_coordinates
+from .data import sort_box_coordinates
+from .ops import reframe_box_masks_to_image_masks
 
 
 def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
@@ -55,7 +55,7 @@ def predict_masks(image: np.ndarray, boxes: pd.DataFrame) -> np.ndarray:
     headers = {"content-type": "application/json"}
     response = requests.post(inference_url, data=data, headers=headers)
     masks = response.json()["predictions"][0]["detection_masks"]
-    masks = ops.reframe_box_masks_to_image_masks(
+    masks = reframe_box_masks_to_image_masks(
         tf.convert_to_tensor(masks), tf.convert_to_tensor(boxes), image_height, image_width
     )
     return masks.numpy()
