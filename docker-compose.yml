@@ -6,9 +6,7 @@ services:
       context: .
       dockerfile: serving.Dockerfile
     ports:
-      - ${PORT_BACKEND:-8501}:${PORT_BACKEND:-8501}
-    environment:
-      MODEL_NAME: deepmac
+      - 8501:${PORT_BACKEND:-8501}
 
   client:
     depends_on:
@@ -20,7 +18,8 @@ services:
       - .:/home/tensorflow/app
     command: python index.py
     environment:
-      - MODEL_API_URL=http://model:${PORT_BACKEND:-8501}/v1/models/deepmac:predict
+      - MODEL_HOST=${MODEL_HOST:-model}
+      - PORT_BACKEND=${PORT_BACKEND:-8501}
       - PORT_FRONTEND=${PORT_FRONTEND:-8502}
       - PORT_DEBUGGER=${PORT_DEBUGGER:-10001}
       - DEBUGGER=${DEBUGGER:-0}

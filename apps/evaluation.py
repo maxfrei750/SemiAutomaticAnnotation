@@ -61,6 +61,12 @@ def get_layout() -> Component:
                             id="loading",
                             size="lg",
                             children=[
+                                dcc.RadioItems(
+                                    ["Deep-MARC", "Deep-MAC"],
+                                    "Deep-MARC",
+                                    id="model-selection",
+                                    style={"margin-bottom": "10%"},
+                                ),
                                 dbc.Button("Start", id="evaluate", n_clicks=0, size="lg"),
                                 html.Div(id="dummy-evaluation"),
                             ],
@@ -99,7 +105,6 @@ def get_layout() -> Component:
     prevent_initial_call=True,
 )
 def update_progress(_, image_paths: List[str]) -> int:
-
     num_samples_total = len(image_paths)
     num_samples_left = len(gather_image_and_csv_paths()[0])
 
@@ -112,17 +117,27 @@ def update_progress(_, image_paths: List[str]) -> int:
     Output("dummy-evaluation", "children"),
     Output("url-evaluation", "pathname"),
     Input("evaluate", "n_clicks"),
+    State("model-selection", "value"),
     State("image-paths", "data"),
     State("csv-paths", "data"),
     prevent_initial_call=True,
 )
-def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]) -> Tuple[None, str]:
+def evaluate_samples(
+    _, model_selection: str, image_paths: List[str], csv_paths: List[str]
+) -> Tuple[None, str]:
     """Evaluate samples.
 
     :param _: Mandatory callback input. Unused.
+    :param model_selection: Model selection.
     :param image_paths: List of input image paths.
     :param csv_paths:  List of annotation csv paths.
     """
+
+    print(f"🚀🚀🚀🚀 Evaluating with {model_selection}...", flush=True)
+
+    models = {"Deep-MAC": "deepmac", "Deep-MARC": "deepmarc"}
+    model_name = models[model_selection]
+    model_results_root = RESULTS_ROOT / model_name
 
     for csv_path, image_path in zip(csv_paths, image_paths):
         csv_path = Path(csv_path)
@@ -131,9 +146,9 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]) -> Tuple[N
         image = read_image(image_path)
         image_identifier = csv_path.stem[11:]
         boxes = pd.read_csv(csv_path)
-        masks = predict_masks(image, boxes)
+        masks = predict_masks(image, boxes, model_name)
 
-        mask_root = RESULTS_ROOT / "masks"
+        mask_root = model_results_root / "masks"
         mask_root.mkdir(exist_ok=True, parents=True)
 
         for mask_id, mask in enumerate(masks):
@@ -141,11 +156,11 @@ def evaluate_samples(_, image_paths: List[str], csv_paths: List[str]) -> Tuple[N
             mask_path = mask_root / f"mask_{image_identifier}_{mask_id}.png"
             Image.fromarray(mask).save(mask_path)
 
-        visualization_path = RESULTS_ROOT / f"visualization_{image_identifier}.png"
+        visualization_path = model_results_root / f"visualization_{image_identifier}.png"
         visualization = visualize_annotation(image, masks, boxes)
         visualization.save(visualization_path)
 
-        shutil.move(image_path, RESULTS_ROOT / image_path.name)
-        shutil.move(csv_path, RESULTS_ROOT / csv_path.name)
+        shutil.move(image_path, model_results_root / image_path.name)
+        shutil.move(csv_path, model_results_root / csv_path.name)
 
     return None, "/apps/results"

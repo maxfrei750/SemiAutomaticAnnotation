@@ -2,7 +2,7 @@ import base64
 from typing import List
 
 import dash_bootstrap_components as dbc
-from dash import dcc, html
+from dash import dcc
 from dash.development.base_component import Component
 
 import custom_components
@@ -15,7 +15,7 @@ def gather_visualization_paths() -> List[AnyPath]:
 
     :return: List of paths of visualization images.
     """
-    return sorted(list(RESULTS_ROOT.glob("visualization_*.*")))
+    return sorted(list(RESULTS_ROOT.glob("**/visualization_*.*")))
 
 
 def b64_image(image_path: AnyPath) -> str:
@@ -36,11 +36,22 @@ def get_layout() -> Component:
     """
     visualization_paths = gather_visualization_paths()
 
+    model_name_mapping = {
+        "deepmarc": "Deep-MARC",
+        "deepmac": "Deep-MAC",
+    }
+
+    captions = [
+        f"{model_name_mapping[image_path.parent.name]}" for image_path in visualization_paths
+    ]
+
     if visualization_paths:
         carousel_items = [
             {
                 "key": str(image_id),
                 "src": b64_image(image_path),
+                "caption": caption,
+                "caption_class_name": "carousel-caption",
                 "img_style": {
                     "max-width": "80%",
                     "height": "80vh",
@@ -50,7 +61,7 @@ def get_layout() -> Component:
                     "margin-bottom": "5%",
                 },
             }
-            for image_id, image_path in enumerate(visualization_paths)
+            for image_id, (image_path, caption) in enumerate(zip(visualization_paths, captions))
         ]
 
         layout = dbc.Col(

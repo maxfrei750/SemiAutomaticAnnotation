@@ -18,3 +18,9 @@ body, html {
 #nav-results.active{
     background-color: var(--bs-green);
 }
+
+.carousel-caption p {
+    display:inline-block;
+    color:black;
+    background-color: rgb(255, 255, 255, 0.5);
+}
