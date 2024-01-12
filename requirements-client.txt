@@ -4,3 +4,4 @@ scikit-image==0.17.2
 dash==2.14.2
 dash-bootstrap-components==1.2.1
 pandas==1.1.5
+debugpy==1.5.1

@@ -65,3 +65,13 @@ If you use this repository for a publication, then please cite it using the foll
 	doi = {10.1016/j.actamat.2023.119106},
 }
 ```
+
+== For developers
+=== Enable debugger in VSCode
+. Create a file named `.env` in the repository folder.
+. Add the following content to the file:
+   DEBUGGER=1
+. Optional: Stop running containers.
+. Start containers: `docker compose up`
+. Attach to the debugger by using the run configuration `Python: Remote Attach` in VSCode.
+. Set breakpoints and start debugging.

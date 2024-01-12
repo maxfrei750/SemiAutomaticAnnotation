@@ -1,0 +1,18 @@
+// .vscode/launch.json
+{
+    "configurations": [
+      {
+        "name": "Python: Remote Attach",
+        "type": "python",
+        "request": "attach",
+        "port": 10001,
+        "host": "0.0.0.0",
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/home/tensorflow/app"
+          }
+        ]
+      }
+    ]
+  }

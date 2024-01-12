@@ -9,7 +9,9 @@ from dash.development.base_component import Component
 from app import app
 from apps import annotation, evaluation, menu, results
 
-PORT_FRONTEND = int(os.environ["PORT_FRONTEND"])
+PORT_FRONTEND = int(os.getenv("PORT_FRONTEND", 8051))
+USE_DEBUGGER = os.getenv("DEBUGGER", "False").lower() in ("true", "1", "t")
+IP = "0.0.0.0"
 
 app.layout = dbc.Container(
     [
@@ -50,4 +52,5 @@ def display_page(path_name: str) -> Tuple[Component, Component, str]:
 
 
 if __name__ == "__main__":
-    app.run_server(host="0.0.0.0", port=PORT_FRONTEND, debug=True, dev_tools_ui=False)
+    print("🚀 Starting frontend", flush=True)
+    app.run_server(host=IP, port=PORT_FRONTEND, debug=USE_DEBUGGER, dev_tools_ui=USE_DEBUGGER)

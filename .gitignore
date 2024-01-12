@@ -84,3 +84,4 @@ build
 /dev
 /assets/images/image_*.png
 /assets/images/visualization_*.png
+.env
