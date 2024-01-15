@@ -15,11 +15,10 @@ image::assets/images/demo.gif[Demo]
 == Installation
 . Install https://github.com/git-guides/install-git[Git].
 . Install https://docs.docker.com/get-docker/[Docker].
-. Install https://docs.docker.com/compose/install/[Docker Compose] (not needed on Windows).
 . Open a command line.
 . Clone this repository: `git clone https://github.com/maxfrei750/SemiAutomaticAnnotation.git`
 . Change into the repository folder: `cd SemiAutomaticAnnotation`
-. Build the required Docker images (this might take some time): `docker compose build`
+. Download the required Docker images (this might take some time): `docker compose pull`
 
 == Usage
 . Place your input images in the `./SemiAutomaticAnnotation/data/input` folder.
@@ -35,7 +34,7 @@ image::assets/images/demo.gif[Demo]
 == Update
 . Open a command line in the repository folder.
 . Pull the latest version: `git pull`
-. Rebuild the Docker images: `docker compose build`
+. Rebuild the Docker images: `docker compose pull`
 
 == Acknowledgement
 This application is based on the following publication:

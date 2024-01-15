@@ -2,6 +2,7 @@ version: "3.9"
 services:
 
   model:
+    image: maxfrei750/semiautomaticannotation_model:v1.1
     build:
       context: .
       dockerfile: serving.Dockerfile
@@ -9,6 +10,7 @@ services:
       - 8501:${PORT_BACKEND:-8501}
 
   client:
+    image: maxfrei750/semiautomaticannotation_client:v1.1
     depends_on:
       - model
     build:
