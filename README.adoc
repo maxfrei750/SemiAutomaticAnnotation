@@ -2,6 +2,7 @@
 
 = SemiAutomaticAnnotation
 
+image:https://img.shields.io/badge/DOI-10.1016/j.actamat.2023.119106-blue.svg[DOI,link="https://doi.org/10.1016/j.actamat.2023.119106"]
 image:https://img.shields.io/github/license/maxfrei750/SemiAutomaticAnnotation.svg[License: MIT,link="https://github.com/maxfrei750/SemiAutomaticAnnotation/blob/main/LICENSE"]
 image:https://img.shields.io/github/license/tensorflow/tensorflow.svg[License: Apache-2.0, link="https://github.com/tensorflow/tensorflow/blob/master/LICENSE"]
 image:https://img.shields.io/badge/platform-docker-blue[Platform: docker]
@@ -42,6 +43,34 @@ This application is based on the following publication:
 https://arxiv.org/abs/2104.00613[Birodkar et al. -- The surprising impact of mask-head architecture on novel class segmentation]
 
 The authors of this application and the aforementioned publication are not associated in any way.
+
+== Deep-MAC versus Deep-MARC
+Birodkar et al. proposed two models, Deep-MAC (Deep Mask-heads Above CenterNet) and Deep-MARC (Deep Mask-heads Above R-CNN). In this application, you can choose between the two models, however, for most particle analysis applications, they produce very similar results.
+
+We compared the two models on a dataset of 32 grain images (with 3500+ grains) like the following one:
+
+image::assets/images/grains.jpg[Grain image, width=30%]
+
+The resulting masks were compared using the intersection over union (IoU) metric and by comparing their sizes.
+
+=== IoU
+The IoU is defined as the area of the intersection of the masks divided by the area of the union of the masks. The following figure shows a histogram of the IoU values for pairs of masks, produced by the two models.
+
+image::assets/images/iou_histogram.svg[Histogram of the IOU values]
+
+The median IoU is 0.92 and 99% of the IoU are larger than 0.62, which indicates a high similarity between the masks produced by the two models. As an illustration, the following figures show corresponding IoU values.
+
+image:assets/images/iou_example_median.svg[Median IoU Example] image:assets/images/iou_example_99_quantile.svg[99% quantile of IoU Example]
+
+=== Grain size
+For this comparison, we used the square root of the number of pixels in the mask as a measure for the grain size. The following figures show histograms of the absolute (left), as well as relative (right) deviations of grain sizes between the two models:
+
+image:assets/images/size_deviation_absolute_histogram.svg[Histogram of absolute size deviations] image:assets/images/size_deviation_relative_histogram.svg[Histogram of relative size deviations]
+
+The deviations were calculated as follows:
+
+	size_deviation_absolute = size_deep_marc - size_deep_mac
+	size_deviation_relative = size_deviation_absolute / size_deep_mac
 
 == Licenses
 
